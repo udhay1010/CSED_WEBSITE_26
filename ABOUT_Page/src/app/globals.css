@@ -1,0 +1,505 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Remove browser spell-check & grammar decorations globally */
+* {
+  -webkit-text-decoration: none;
+  text-decoration-skip-ink: none;
+}
+[spellcheck] {
+  -webkit-text-decoration: none !important;
+  text-decoration: none !important;
+}
+
+/* ── Bubble / Blob animations ─────────────────────────────────────── */
+@keyframes blob-morph {
+  0%,100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0,0) scale(1); }
+  25%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(30px,-25px) scale(1.06); }
+  50%      { border-radius: 50% 50% 20% 80% / 25% 80% 20% 75%; transform: translate(-22px,20px) scale(0.94); }
+  75%      { border-radius: 70% 30% 60% 40% / 40% 40% 60% 60%; transform: translate(12px,-35px) scale(1.09); }
+}
+@keyframes blob-morph-2 {
+  0%,100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; transform: translate(0,0) scale(1); }
+  33%     { border-radius: 70% 30% 40% 60% / 60% 40% 50% 40%; transform: translate(-28px,18px) scale(1.04); }
+  66%     { border-radius: 30% 70% 60% 40% / 70% 30% 40% 60%; transform: translate(22px,-28px) scale(0.96); }
+}
+@keyframes blob-morph-3 {
+  0%,100% { border-radius: 55% 45% 65% 35% / 45% 65% 35% 55%; transform: translate(0,0) scale(1); }
+  40%     { border-radius: 35% 65% 45% 55% / 65% 35% 55% 45%; transform: translate(18px,25px) scale(0.93); }
+  80%     { border-radius: 65% 35% 55% 45% / 35% 55% 45% 65%; transform: translate(-15px,-18px) scale(1.07); }
+}
+@keyframes blob-float {
+  0%,100% { transform: translateY(0px); }
+  50%     { transform: translateY(-18px); }
+}
+
+:root {
+  --background: #050505;
+  --foreground: #FFFFFF;
+  --csed-red: #E50914;
+  --csed-black: #111111;
+  --csed-white: #FFFFFF;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif; /* Fallback, overridden by Inter */
+  overflow-x: hidden;
+}
+
+/* Custom selection */
+::selection {
+  background: #E50914;
+  color: #FFFFFF;
+}
+
+/* Hide scrollbar for cinematic feel but keep functionality */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Neon Flicker Animations */
+.neon-flicker-red {
+  animation: flicker-red 2s infinite alternate;
+}
+
+.neon-flicker-black {
+  animation: flicker-black 2s infinite alternate;
+}
+
+@keyframes flicker-red {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(229, 9, 20, 0.6), 0 0 20px rgba(229, 9, 20, 0.4);
+  }
+  20%, 24%, 55% {
+    opacity: 0.2;
+    text-shadow: none;
+  }
+}
+
+@keyframes flicker-black {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+  20%, 24%, 55% {
+    opacity: 0.2;
+    text-shadow: none;
+  }
+}
+
+/* Text animation base styles */
+.anim-tagline .word {
+  display: inline-block;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+/* =========================================
+   Futuristic Neon Search Bar — Red/Black/White
+   ========================================= */
+
+/* Outer neon wrapper — creates the glowing border effect */
+.gsearch-neon-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 660px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(229, 9, 20, 0.9) 0%,
+    rgba(255, 255, 255, 0.4) 30%,
+    rgba(229, 9, 20, 0.7) 60%,
+    rgba(17, 17, 17, 0.9) 100%
+  );
+  background-size: 300% 300%;
+  animation: neon-border-rotate 3s linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes neon-border-rotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Outer glow halo behind the wrapper */
+.gsearch-neon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow:
+    0 0 18px 4px rgba(229, 9, 20, 0.35),
+    0 0 40px 8px rgba(229, 9, 20, 0.18),
+    0 0 80px 12px rgba(229, 9, 20, 0.08),
+    0 0 6px 2px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+  animation: neon-halo-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes neon-halo-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 18px 4px rgba(229, 9, 20, 0.35),
+      0 0 40px 8px rgba(229, 9, 20, 0.18),
+      0 0 80px 12px rgba(229, 9, 20, 0.08),
+      0 0 6px 2px rgba(255, 255, 255, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 28px 6px rgba(229, 9, 20, 0.55),
+      0 0 60px 12px rgba(229, 9, 20, 0.28),
+      0 0 110px 18px rgba(229, 9, 20, 0.12),
+      0 0 8px 3px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Ground reflection glow under the bar */
+.gsearch-neon-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 10%;
+  width: 80%;
+  height: 12px;
+  background: radial-gradient(ellipse at center, rgba(229, 9, 20, 0.4) 0%, transparent 75%);
+  filter: blur(4px);
+  pointer-events: none;
+  animation: neon-halo-pulse 2.5s ease-in-out infinite;
+}
+
+/* The actual search bar pill */
+.gsearch-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 56px;
+  padding: 0 10px 0 20px;
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 14px;
+  border: none;
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.gsearch-bar:hover {
+  background: rgba(18, 18, 18, 0.94);
+  transform: translateY(-1px);
+}
+
+/* Subtle scanline texture overlay */
+.gsearch-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  border-radius: 14px;
+}
+
+.gsearch-icon-left {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-right: 14px;
+}
+
+.gsearch-input-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-family: 'Inter', arial, sans-serif;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.03em;
+  min-height: 28px;
+  overflow: hidden;
+}
+
+.gsearch-typed {
+  white-space: pre;
+  text-shadow: 0 0 8px rgba(229, 9, 20, 0.5);
+}
+
+.gsearch-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 20px;
+  background: #E50914;
+  margin-left: 2px;
+  border-radius: 1px;
+  animation: g-blink 0.9s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(229, 9, 20, 0.8);
+}
+
+@keyframes g-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.gsearch-icons-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.gsearch-mic {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.gsearch-mic:hover {
+  opacity: 1;
+}
+
+/* Search button — glowing red pill */
+.gsearch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #E50914 0%, #a00610 100%);
+  border: 1px solid rgba(229, 9, 20, 0.6);
+  cursor: pointer;
+  box-shadow:
+    0 0 10px rgba(229, 9, 20, 0.5),
+    0 0 20px rgba(229, 9, 20, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
+}
+
+.gsearch-btn:hover {
+  background: linear-gradient(135deg, #ff1a24 0%, #c0081a 100%);
+  box-shadow:
+    0 0 18px rgba(229, 9, 20, 0.7),
+    0 0 36px rgba(229, 9, 20, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Loading bar — Red neon sweep */
+.gsearch-loading {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #E50914 20%,
+    #ffffff 50%,
+    #E50914 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  transform-origin: left center;
+  border-radius: 0 0 14px 14px;
+  animation: loading-sweep 0.9s linear infinite;
+  box-shadow: 0 0 8px rgba(229, 9, 20, 0.8), 0 0 16px rgba(229, 9, 20, 0.4);
+}
+
+@keyframes loading-sweep {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* =========================================
+   Google-Style Search Results
+   ========================================= */
+
+.gsearch-results {
+  margin-top: 16px;
+  width: 100%;
+  max-width: 692px;
+}
+
+.gsearch-stats {
+  font-size: 13px;
+  color: #70757a;
+  font-family: arial, sans-serif;
+  padding: 0 0 12px 4px;
+}
+
+/* Single result card */
+.gsearch-result-card {
+  padding: 16px 0 20px;
+}
+
+.g-result-url-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.g-favicon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #E50914;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.g-favicon-letter {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: arial, sans-serif;
+}
+
+.g-url-text {
+  font-size: 14px;
+  font-family: arial, sans-serif;
+  line-height: 1.4;
+}
+
+.g-url-domain {
+  color: #202124;
+  font-weight: 400;
+}
+
+.g-url-path {
+  color: #70757a;
+  font-weight: 400;
+}
+
+.g-result-title {
+  display: block;
+  font-size: 20px;
+  font-family: arial, sans-serif;
+  color: #1a0dab;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.g-result-title:hover {
+  text-decoration: underline;
+}
+
+.g-result-snippet {
+  font-size: 14px;
+  font-family: arial, sans-serif;
+  color: #4d5156;
+  line-height: 1.58;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.g-result-snippet strong {
+  font-weight: 700;
+  color: #3c4043;
+}
+
+/* People Also Ask */
+.gsearch-paa {
+  margin-top: 12px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.g-paa-header {
+  font-size: 18px;
+  font-family: arial, sans-serif;
+  color: #202124;
+  font-weight: 400;
+  padding: 14px 16px 10px;
+}
+
+.g-paa-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid #dadce0;
+  font-size: 14px;
+  font-family: arial, sans-serif;
+  color: #202124;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.g-paa-item:hover {
+  background: #f8f9fa;
+}
+
+.g-result-item {
+  will-change: transform, opacity;
+}
+
+/* =========================================
+   Welcome Message — Inline Block
+   ========================================= */
+
+.welcome-inline-block {
+  width: 100%;
+  max-width: 640px;
+  margin-top: 12px;
+  perspective: 1200px;
+  position: relative;
+}
+
+.welcome-inline-text {
+  font-family: var(--font-inter), 'Inter', Arial, sans-serif;
+  font-weight: 900;
+  font-synthesis: none;
+  -webkit-text-stroke: 0.5px #FF0000;  /* thickens letters beyond weight 900 */
+  font-style: normal;
+  font-size: clamp(16px, 1.9vw, 26px);
+  color: #FF0000;
+  line-height: 2.5;
+  letter-spacing: 0.025em;
+  text-transform: none;
+  will-change: transform, opacity;
+  text-align: left;
+}
+
+/* Per-line cinematic reveal unit */
+.welcome-line {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 0.15em;
+}
+
+.welcome-word {
+  display: inline-block;
+  white-space: nowrap;
+  margin-right: 0.28em;
+  will-change: transform, opacity, filter;
+}
+
