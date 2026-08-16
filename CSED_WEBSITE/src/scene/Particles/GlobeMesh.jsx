@@ -9,26 +9,29 @@ import {
   GLOBE_ROTATION_SPEED,
   TIMING,
 } from "./particleConfig";
+import { useIntroStore } from "../../store/introStore";
 
 const TILT_RAD = (AXIAL_TILT * Math.PI) / 180;
 
-// Low-density wireframe: fewer segments = sparser mesh
-const W_SEGMENTS = 18; // longitude lines
-const H_SEGMENTS = 12; // latitude lines
+const W_SEGMENTS = 18;
+const H_SEGMENTS = 12;
+
+const HOME_GLOBE_X  =  0;
+const ABOUT_GLOBE_X = -14;
+const ABOUT_GLOBE_Y = -2.5;
+const HOME_SCALE    = 1.0;
+const ABOUT_SCALE   = HOME_SCALE * 0.6;
+
+function lerp(a, b, t) { return a + (b - a) * t; }
 
 export default function GlobeMesh() {
-  // outerGroup → position Y + tilt Z
-  // spinGroup  → spins around local Y (the tilted axis)
   const outerRef = useRef();
   const spinRef  = useRef();
 
-  // Build a thin wireframe geometry from a sphere
+  const scrollProgress = useIntroStore((s) => s.scrollProgress);
+
   const geometry = useMemo(() => {
-    const sphere = new THREE.SphereGeometry(
-      GLOBE_RADIUS,
-      W_SEGMENTS,
-      H_SEGMENTS
-    );
+    const sphere = new THREE.SphereGeometry(GLOBE_RADIUS, W_SEGMENTS, H_SEGMENTS);
     return new THREE.WireframeGeometry(sphere);
   }, []);
 
@@ -38,7 +41,6 @@ export default function GlobeMesh() {
         color:       new THREE.Color(0xe63946),
         transparent: true,
         opacity:     0,
-        blending:    THREE.AdditiveBlending,
         depthWrite:  false,
         linewidth:   1,
       }),
@@ -51,7 +53,7 @@ export default function GlobeMesh() {
     const spin  = spinRef.current;
     if (!outer || !spin) return;
 
-    // ── Outer: position Y + tilt Z (matches ParticleSystem exactly) ──
+    // ── Y + tilt (mirrors ParticleSystem) ────────────────
     if (t < TIMING.FORM_START) {
       outer.position.y = 0;
       outer.rotation.z = 0;
@@ -59,18 +61,32 @@ export default function GlobeMesh() {
       const p  = (t - TIMING.FORM_START) / (TIMING.FORM_END - TIMING.FORM_START);
       const ep = p * p * (3 - 2 * p);
       outer.position.y = GLOBE_OFFSET_Y * ep;
-      outer.rotation.z = -TILT_RAD * ep; // negative = right tilt from viewer
+      outer.rotation.z = -TILT_RAD * ep;
     } else {
-      outer.position.y = GLOBE_OFFSET_Y;
-      outer.rotation.z = -TILT_RAD;      // negative = right tilt from viewer
+      // Y is handled by the scroll-driven lerp below if intro is done
+      outer.rotation.z = -TILT_RAD;
     }
 
-    // ── Inner spin: local Y = the tilted axis ────────────────────
+    // ── Position — scroll-driven (matches ParticleSystem exactly) ───────
+    const sp = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
+    
+    // X: Move left
+    outer.position.x = lerp(HOME_GLOBE_X, ABOUT_GLOBE_X, sp);
+    
+    // Y: Lerp bottom -> centered About placement
+    if (t >= TIMING.FORM_END) {
+      outer.position.y = lerp(GLOBE_OFFSET_Y, ABOUT_GLOBE_Y, sp);
+    }
+
+    // Match the particle globe's 60% settled About scale.
+    outer.scale.setScalar(lerp(HOME_SCALE, ABOUT_SCALE, sp));
+
+    // ── Continuous spin ───────────────────────────────────
     if (t > TIMING.FORM_START) {
       spin.rotation.y += delta * GLOBE_ROTATION_SPEED;
     }
 
-    // ── Fade in after globe finishes forming ─────────────────────
+    // ── Wireframe fade-in after formation ─────────────────
     if (t > TIMING.FORM_END) {
       const raw     = Math.min((t - TIMING.FORM_END) / 2.2, 1.0);
       const opacity = raw * raw * (3 - 2 * raw);

@@ -1,14 +1,15 @@
+"use client";
 import React, { useRef, useEffect, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import SplitType from "split-type";
 import KineticTitle from "./KineticTitle";
-import "./About.css";
 
 const SEARCH_QUERY = "CSED VIT VELLORE";
 const WELCOME_MESSAGE =
   "WELCOME TO CSED, VIT'S PIONEERING SOCIAL ENTREPRENEURSHIP CLUB. SINCE 2010, WE'VE HOSTED IMPACTFUL EVENTS AND A VIBRANT COMMUNITY. EXPLORE OPPORTUNITIES TO INNOVATE AND DRIVE POSITIVE CHANGE WITH US!";
 
-export default function About() {
+export default function AboutSection() {
   const containerRef    = useRef(null);
   const rayCanvasRef    = useRef(null);
   const taglineRef      = useRef(null);
@@ -21,24 +22,8 @@ export default function About() {
   const welcomeTextRef   = useRef(null);
   const [typedText, setTypedText] = useState("");
   const [phase, setPhase]         = useState("idle");
-  const [hasEntered, setHasEntered] = useState(false);
 
-  // Intersection Observer to start animations when scrolled into view
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasEntered(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    if (containerRef.current) observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  // Star spin on mouse drag / move
+  // Star spin on mouse drag
   useEffect(() => {
     const section = containerRef.current;
     const star    = starRef.current;
@@ -62,7 +47,6 @@ export default function About() {
 
   // Tagline animation
   useEffect(() => {
-    if (!hasEntered) return;
     const tEl = taglineRef.current, sEl = starRef.current;
     if (!tEl) return;
     gsap.set(tEl, { opacity: 0 });
@@ -76,7 +60,7 @@ export default function About() {
     tl.to(sEl, { filter: "drop-shadow(0 0 16px rgba(229,9,20,0.9))", duration: 0.5, yoyo: true, repeat: 3, ease: "sine.inOut" });
     tl.call(() => setPhase("search-enter"), [], "-=0.5");
     return () => { tl.kill(); split.revert(); };
-  }, [hasEntered]);
+  }, []);
 
   // Search bar entrance
   useEffect(() => {
@@ -231,9 +215,11 @@ export default function About() {
     return () => tl.kill();
   }, [phase]);
 
+  // Cinematic gold line-by-line reveal
   function runCinematicReveal(wordEls, section, rayCanvas, originX, originY, onDone) {
     gsap.set(rayCanvas, { opacity: 0 });
 
+    // STEP 1: Measure natural line positions BEFORE applying any transforms
     const lineMap = new Map();
     wordEls.forEach(el => {
       const r   = el.getBoundingClientRect();
@@ -246,8 +232,10 @@ export default function About() {
       .sort((a, b) => a[0] - b[0])
       .map(([, els]) => els);
 
+    // STEP 2: Now hide words and apply start state
     gsap.set(wordEls, { opacity: 0, y: 18, filter: "blur(6px)" });
 
+    // Subtle zoom-in on the whole block
     const block = welcomeBlockRef.current;
     if (block) {
       gsap.fromTo(block,
@@ -258,7 +246,7 @@ export default function About() {
 
     const tl = gsap.timeline({ onComplete: onDone });
     lines.forEach((lineWords, i) => {
-      const t = i * 0.12;
+      const t = i * 0.12;   // faster stagger between lines
 
       tl.to(lineWords, {
         opacity: 1,
@@ -279,31 +267,19 @@ export default function About() {
 
   return (
     <section
-      id="about"
       ref={containerRef}
-      className="relative w-full min-h-screen text-black flex overflow-hidden"
-      style={{
-        /* No z-index here so it doesn't create a stacking context */
-      }}
+      className="relative w-full min-h-screen bg-white text-black flex overflow-hidden"
     >
-      {/* 
-        Full white background for About section. 
-        z-index 0 puts it behind the GlobeScene canvas (which is z-index 5).
-      */}
-      <div className="absolute inset-0 bg-white" style={{ zIndex: 0 }} />
-
       <canvas ref={rayCanvasRef} className="absolute top-0 left-0 pointer-events-none z-30" style={{ opacity: 1 }} />
 
       {/* Title centered on full page width */}
       <div className="absolute top-[6vh] left-0 w-full flex justify-center z-50 pointer-events-none">
-        <KineticTitle startAnimation={hasEntered} />
+        <KineticTitle />
       </div>
 
-      {/* Left spacer column — purely to push content rightwards, transparent so globe shows through */}
-      <div className="w-[35%] h-full hidden md:block pointer-events-none flex-shrink-0 relative" style={{ zIndex: 20 }} />
+      <div className="w-[35%] h-full hidden md:block z-20 pointer-events-none" />
 
-      {/* Right content column — white background, text readable above canvas */}
-      <div className="w-full md:w-[65%] h-full flex flex-col justify-start pt-[calc(12vh+7rem)] px-10 relative" style={{ zIndex: 20 }}>
+      <div className="w-full md:w-[65%] h-full flex flex-col justify-start pt-[calc(12vh+7rem)] px-10 relative z-40 pointer-events-none">
 
         <div className="flex items-center gap-3 text-3xl font-semibold tracking-wide text-black mb-8">
           <span ref={taglineRef} className="anim-tagline">Our Social Entrepreneurship Journey</span>
@@ -330,7 +306,7 @@ export default function About() {
                   <path fill="#E50914" d="M19 12h-2c0 1.66-1.34 3-3 3v2c2.76 0 5-2.24 5-5z"/>
                 </svg>
               </div>
-              <button className="gsearch-btn" type="button" aria-label="Search">
+              <button className="gsearch-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
                   <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#FFFFFF" />
                 </svg>
@@ -346,7 +322,7 @@ export default function About() {
       </div>
 
       <div className="absolute right-0 bottom-0 h-[92vh] w-[45vw] flex items-end justify-end z-0 pointer-events-none">
-        <img src="/hero-portrait-csed.png" alt="CSED Hero Portrait" className="w-full h-full object-contain object-right-bottom opacity-90" />
+        <Image src="/hero-portrait-csed.png" alt="CSED Hero Portrait" fill className="object-contain object-right-bottom opacity-90" />
       </div>
     </section>
   );

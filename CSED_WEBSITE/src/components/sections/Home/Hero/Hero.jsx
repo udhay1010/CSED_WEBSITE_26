@@ -1,8 +1,24 @@
 import { useEffect, useRef } from "react";
+import { useIntroStore } from "../../../../store/introStore";
 
+/**
+ * Hero
+ *
+ * The visible Home content.
+ *
+ * Animation-gated: opacity is driven by the `heroOpacity` value in the
+ * Zustand store.  ParticleSystem writes this value once the intro
+ * particle animation has completed (after TIMING.HERO_FADE = 4.0 s),
+ * so the text only becomes visible after the globe has fully formed.
+ *
+ * The canvas background is transparent — the dark body background and
+ * the Three.js canvas (z-2) are visible behind this section.
+ */
 function Hero() {
-  const canvasRef = useRef(null);
+  const canvasRef  = useRef(null);
+  const heroOpacity = useIntroStore((s) => s.heroOpacity);
 
+  // ── Stars canvas (subtle ambient stars behind the text) ──
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -12,21 +28,21 @@ function Hero() {
     let stars = [];
 
     const resize = () => {
-      canvas.width = window.innerWidth;
+      canvas.width  = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
     const createStars = () => {
       stars = Array.from({ length: 280 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 1.4 + 0.3,
-        alpha: 0,
+        x:           Math.random() * canvas.width,
+        y:           Math.random() * canvas.height,
+        radius:      Math.random() * 1.4 + 0.3,
+        alpha:       0,
         targetAlpha: Math.random() * 0.8 + 0.2,
         twinkleSpeed: Math.random() * 0.012 + 0.004,
-        twinkleDir: 1,
-        fadeIn: true,
-        fadeSpeed: Math.random() * 0.008 + 0.003,
+        twinkleDir:  1,
+        fadeIn:      true,
+        fadeSpeed:   Math.random() * 0.008 + 0.003,
       }));
     };
 
@@ -34,16 +50,14 @@ function Hero() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       stars.forEach((star) => {
-        // Fade in on load
         if (star.fadeIn) {
           star.alpha = Math.min(star.alpha + star.fadeSpeed, star.targetAlpha);
           if (star.alpha >= star.targetAlpha) star.fadeIn = false;
         }
 
-        // Twinkle
         star.alpha += star.twinkleSpeed * star.twinkleDir;
         if (star.alpha >= star.targetAlpha) {
-          star.alpha = star.targetAlpha;
+          star.alpha      = star.targetAlpha;
           star.twinkleDir = -1;
         } else if (star.alpha <= star.targetAlpha * 0.25) {
           star.twinkleDir = 1;
@@ -51,9 +65,9 @@ function Hero() {
 
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-        ctx.shadowColor = "rgba(200, 200, 255, 0.6)";
-        ctx.shadowBlur = 4;
+        ctx.fillStyle    = `rgba(255, 255, 255, ${star.alpha})`;
+        ctx.shadowColor  = "rgba(200, 200, 255, 0.6)";
+        ctx.shadowBlur   = 4;
         ctx.fill();
       });
 
@@ -64,14 +78,12 @@ function Hero() {
     createStars();
     draw();
 
-    window.addEventListener("resize", () => {
-      resize();
-      createStars();
-    });
+    const onResize = () => { resize(); createStars(); };
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(animationId);
-      window.removeEventListener("resize", resize);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -82,66 +94,50 @@ function Hero() {
     "0 0 8px rgba(255,255,255,0.95), 0 0 20px rgba(255,255,255,0.6), 0 0 40px rgba(255,255,255,0.3), 2px 2px 6px rgba(200,200,200,0.7)";
 
   return (
-    <section className="relative flex h-screen -translate-y-24 flex-col items-center justify-center px-6 text-center md:-translate-y-32">
-      {/* Stars canvas */}
+    <section
+      className="relative flex h-screen flex-col items-center justify-center px-6 text-center -translate-y-24 md:-translate-y-32"
+      style={{ background: "transparent" }}
+    >
+      {/* Subtle ambient stars — rendered behind hero text */}
       <canvas
         ref={canvasRef}
         className="pointer-events-none absolute inset-0 z-0"
-        style={{ mixBlendMode: "screen" }}
+        style={{ mixBlendMode: "screen", opacity: heroOpacity }}
       />
 
-      <div className="intro-heading relative z-10">
-        {/* Uniform title — all same size ~20px, white, red shadow */}
+      {/* Hero text — fades in only after intro animation completes */}
+      <div
+        className="intro-heading relative z-10"
+        style={{ opacity: heroOpacity, transition: "opacity 0.3s ease" }}
+      >
         <p
           className="font-[Outfit] uppercase tracking-[0.55em] text-white"
-          style={{
-            fontSize: "55px",
-            fontWeight: 900,
-            lineHeight: 1.8,
-            letterSpacing: "0.55em",
-            textShadow: redShadow,
-          }}
+          style={{ fontSize: "55px", fontWeight: 900, lineHeight: 1.8, letterSpacing: "0.55em", textShadow: redShadow }}
         >
           Center for
         </p>
         <p
           className="font-[Outfit] uppercase text-white"
-          style={{
-            fontSize: "55px",
-            fontWeight: 900,
-            letterSpacing: "0.42em",
-            textShadow: redShadow,
-            lineHeight: 1.8,
-          }}
+          style={{ fontSize: "55px", fontWeight: 900, letterSpacing: "0.42em", textShadow: redShadow, lineHeight: 1.8 }}
         >
           Social Entrepreneurship
         </p>
         <p
           className="font-[Outfit] uppercase text-white"
-          style={{
-            fontSize: "55px",
-            fontWeight: 900,
-            letterSpacing: "0.42em",
-            textShadow: redShadow,
-            lineHeight: 1.8,
-          }}
+          style={{ fontSize: "55px", fontWeight: 900, letterSpacing: "0.42em", textShadow: redShadow, lineHeight: 1.8 }}
         >
-          <span style={{ color: "var(--red)", textShadow: whiteShadow }}>
-            &
-          </span>{" "}
+          <span style={{ color: "var(--red)", textShadow: whiteShadow }}>&</span>{" "}
           Development
         </p>
 
-        {/* Tagline */}
         <p className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-white/55 md:text-lg">
           Building Bridges to a Better World Through{" "}
           <span
             style={{
-              background:
-                "linear-gradient(264deg, rgb(255, 140, 34) -44.99%, rgb(255, 237, 172) 155.84%)",
+              background: "linear-gradient(264deg, rgb(255, 140, 34) -44.99%, rgb(255, 237, 172) 155.84%)",
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
+              WebkitTextFillColor:  "transparent",
+              backgroundClip:       "text",
             }}
           >
             Social Entrepreneurship

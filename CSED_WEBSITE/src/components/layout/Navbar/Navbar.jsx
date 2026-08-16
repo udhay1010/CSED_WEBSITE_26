@@ -1,16 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Navbar() {
-  const links = ["Home", "About", "Initiatives", "Team", "Events", "Contact"];
+  const links = ["Home", "About", "Events", "Blog", "Board", "Contact"];
   const [active, setActive] = useState("Home");
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      const about = document.getElementById("about");
+      if (!about) return;
+
+      const rect = about.getBoundingClientRect();
+      const readingLine = Math.min(window.innerHeight * 0.4, 300);
+      const nextActive = rect.top <= readingLine && rect.bottom > readingLine ? "About" : "Home";
+
+      setActive((current) => (current === nextActive ? current : nextActive));
+    };
+
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+    updateActiveSection();
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
+  }, []);
+
   const selectLink = (link) => {
+    if (link === "About") {
+      const about = document.getElementById("about");
+      if (about) {
+        const navbarHeight = 80;
+        const targetY = window.scrollY + about.getBoundingClientRect().top - navbarHeight;
+        window.scrollTo({ top: targetY, behavior: "smooth" });
+      }
+    }
+
     setActive(link);
     setMenuOpen(false);
   };
 
   return (
-    <nav className="intro-nav fixed top-0 right-0 left-0 z-50 border-b border-white/5 bg-[var(--bg)]/60 backdrop-blur-md">
+    <nav className="intro-nav fixed top-0 right-0 left-0 z-[60] border-b border-white/5 bg-[var(--bg)]">
       <div className="mx-auto flex h-20 max-w-[1900px] items-center justify-between gap-6 px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32">
         <div className="shrink-0 leading-none">
           <div className="font-[Outfit] text-4xl font-bold tracking-[0.15em] text-white select-none">

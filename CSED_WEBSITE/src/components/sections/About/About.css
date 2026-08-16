@@ -1,0 +1,303 @@
+/* About Section Styles */
+
+/* Remove browser spell-check & grammar decorations */
+[spellcheck] {
+  -webkit-text-decoration: none !important;
+  text-decoration: none !important;
+}
+
+/* Neon Flicker Animations */
+.neon-flicker-red {
+  animation: flicker-red 2s infinite alternate;
+}
+
+.neon-flicker-black {
+  animation: flicker-black 2s infinite alternate;
+}
+
+@keyframes flicker-red {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(229, 9, 20, 0.6), 0 0 20px rgba(229, 9, 20, 0.4);
+  }
+  20%, 24%, 55% {
+    opacity: 0.2;
+    text-shadow: none;
+  }
+}
+
+@keyframes flicker-black {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 0, 0, 0.2);
+  }
+  20%, 24%, 55% {
+    opacity: 0.2;
+    text-shadow: none;
+  }
+}
+
+/* Text animation base styles */
+.anim-tagline .word {
+  display: inline-block;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Outer neon wrapper — creates the glowing border effect */
+.gsearch-neon-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 660px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(229, 9, 20, 0.9) 0%,
+    rgba(255, 255, 255, 0.4) 30%,
+    rgba(229, 9, 20, 0.7) 60%,
+    rgba(17, 17, 17, 0.9) 100%
+  );
+  background-size: 300% 300%;
+  animation: neon-border-rotate 3s linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes neon-border-rotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Outer glow halo behind the wrapper */
+.gsearch-neon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow:
+    0 0 18px 4px rgba(229, 9, 20, 0.35),
+    0 0 40px 8px rgba(229, 9, 20, 0.18),
+    0 0 80px 12px rgba(229, 9, 20, 0.08),
+    0 0 6px 2px rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+  animation: neon-halo-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes neon-halo-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 18px 4px rgba(229, 9, 20, 0.35),
+      0 0 40px 8px rgba(229, 9, 20, 0.18),
+      0 0 80px 12px rgba(229, 9, 20, 0.08),
+      0 0 6px 2px rgba(255, 255, 255, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 28px 6px rgba(229, 9, 20, 0.55),
+      0 0 60px 12px rgba(229, 9, 20, 0.28),
+      0 0 110px 18px rgba(229, 9, 20, 0.12),
+      0 0 8px 3px rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Ground reflection glow under the bar */
+.gsearch-neon-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 10%;
+  width: 80%;
+  height: 12px;
+  background: radial-gradient(ellipse at center, rgba(229, 9, 20, 0.4) 0%, transparent 75%);
+  filter: blur(4px);
+  pointer-events: none;
+  animation: neon-halo-pulse 2.5s ease-in-out infinite;
+}
+
+/* The actual search bar pill */
+.gsearch-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 56px;
+  padding: 0 10px 0 20px;
+  background: rgba(10, 10, 10, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 14px;
+  border: none;
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.gsearch-bar:hover {
+  background: rgba(18, 18, 18, 0.94);
+  transform: translateY(-1px);
+}
+
+/* Subtle scanline texture overlay */
+.gsearch-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  border-radius: 14px;
+}
+
+.gsearch-icon-left {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-right: 14px;
+}
+
+.gsearch-input-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-family: 'Inter', arial, sans-serif;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.03em;
+  min-height: 28px;
+  overflow: hidden;
+}
+
+.gsearch-typed {
+  white-space: pre;
+  text-shadow: 0 0 8px rgba(229, 9, 20, 0.5);
+}
+
+.gsearch-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 20px;
+  background: #E50914;
+  margin-left: 2px;
+  border-radius: 1px;
+  animation: g-blink 0.9s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(229, 9, 20, 0.8);
+}
+
+@keyframes g-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.gsearch-icons-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.gsearch-mic {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.gsearch-mic:hover {
+  opacity: 1;
+}
+
+/* Search button — glowing red pill */
+.gsearch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #E50914 0%, #a00610 100%);
+  border: 1px solid rgba(229, 9, 20, 0.6);
+  cursor: pointer;
+  box-shadow:
+    0 0 10px rgba(229, 9, 20, 0.5),
+    0 0 20px rgba(229, 9, 20, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: all 0.25s ease;
+}
+
+.gsearch-btn:hover {
+  background: linear-gradient(135deg, #ff1a24 0%, #c0081a 100%);
+  box-shadow:
+    0 0 18px rgba(229, 9, 20, 0.7),
+    0 0 36px rgba(229, 9, 20, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Loading bar — Red neon sweep */
+.gsearch-loading {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    #E50914 20%,
+    #ffffff 50%,
+    #E50914 80%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  transform-origin: left center;
+  border-radius: 0 0 14px 14px;
+  animation: loading-sweep 0.9s linear infinite;
+  box-shadow: 0 0 8px rgba(229, 9, 20, 0.8), 0 0 16px rgba(229, 9, 20, 0.4);
+}
+
+@keyframes loading-sweep {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Welcome Message — Inline Block */
+.welcome-inline-block {
+  width: 100%;
+  max-width: 640px;
+  margin-top: 12px;
+  perspective: 1200px;
+  position: relative;
+}
+
+.welcome-inline-text {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 900;
+  font-synthesis: none;
+  -webkit-text-stroke: 0.5px #FF0000;
+  font-style: normal;
+  font-size: clamp(16px, 1.9vw, 26px);
+  color: #FF0000;
+  line-height: 2.5;
+  letter-spacing: 0.025em;
+  text-transform: none;
+  will-change: transform, opacity;
+  text-align: left;
+}
+
+.welcome-word {
+  display: inline-block;
+  white-space: nowrap;
+  margin-right: 0.28em;
+  will-change: transform, opacity, filter;
+}

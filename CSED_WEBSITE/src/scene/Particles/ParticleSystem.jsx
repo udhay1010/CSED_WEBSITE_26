@@ -2,8 +2,8 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 
 import { createParticleGeometry } from "./ParticleGeometry";
-import { createParticleMaterial } from "./ParticleMaterial";
-import { getHeroOpacity } from "./ParticleTimeline";
+import { createParticleMaterial  } from "./ParticleMaterial";
+import { getHeroOpacity           } from "./ParticleTimeline";
 import {
   TIMING,
   GLOBE_OFFSET_Y,
@@ -14,16 +14,33 @@ import { useIntroStore } from "../../store/introStore";
 
 const TILT_RAD = (AXIAL_TILT * Math.PI) / 180;
 
+// ── Globe world-space X positions & Scale ──────────────────────────
+// HOME:  centered (0), scale 1
+// ABOUT: moved left so only the right ~half of the globe is visible.
+//        Globe radius = 14.  Setting X = -14 puts the centre at the
+//        approximate left viewport edge (verified against FOV / depth).
+//        Scale is reduced so it doesn't dominate the white section.
+const HOME_GLOBE_X  =  0;
+const ABOUT_GLOBE_X = -14;
+const ABOUT_GLOBE_Y = -2.5;
+const HOME_SCALE    = 1.0;
+const ABOUT_SCALE   = HOME_SCALE * 0.6;
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
 export default function ParticleSystem() {
-  // outerGroup  → handles vertical position + axial tilt (Z)
-  // spinGroup   → spins around its own local Y (which IS the tilted axis)
-  const outerRef  = useRef();
-  const spinRef   = useRef();
-  const pointsRef = useRef();
-  const setHeroOpacity = useIntroStore((s) => s.setHeroOpacity);
+  const outerRef   = useRef();
+  const spinRef    = useRef();
+  const pointsRef  = useRef();
+
+  const setHeroOpacity   = useIntroStore((s) => s.setHeroOpacity);
+  const scrollProgress   = useIntroStore((s) => s.scrollProgress);
+  const setIntroComplete = useIntroStore((s) => s.setIntroComplete);
 
   const geometry = useMemo(() => createParticleGeometry(), []);
-  const material = useMemo(() => createParticleMaterial(), []);
+  const material = useMemo(() => createParticleMaterial(),  []);
+
+  let introMarked = false;
 
   useFrame(({ clock }, delta) => {
     const t     = clock.elapsedTime;
@@ -31,33 +48,54 @@ export default function ParticleSystem() {
     const spin  = spinRef.current;
     if (!outer || !spin) return;
 
-    // ── Update shader time ──────────────────────
-    material.uniforms.uTime.value = t;
+    // ── Shader time ────────────────────────────────────────
+    material.uniforms.uTime.value        = t;
+    material.uniforms.uColorInvert.value = scrollProgress;
 
-    // ── Outer: position Y + tilt Z (no rotation.y here) ───
+    // ── Y position + axial tilt (intro animation) ──────────
     if (t < TIMING.FORM_START) {
       outer.position.y = 0;
       outer.rotation.z = 0;
     } else if (t < TIMING.FORM_END) {
       const p  = (t - TIMING.FORM_START) / (TIMING.FORM_END - TIMING.FORM_START);
-      const ep = p * p * (3 - 2 * p); // smoothstep
+      const ep = p * p * (3 - 2 * p);
       outer.position.y = GLOBE_OFFSET_Y * ep;
-      outer.rotation.z = -TILT_RAD * ep; // negative = right tilt from viewer
+      outer.rotation.z = -TILT_RAD * ep;
     } else {
       outer.position.y = GLOBE_OFFSET_Y;
-      outer.rotation.z = -TILT_RAD;      // negative = right tilt from viewer
+      outer.rotation.z = -TILT_RAD;
+
+      // Mark intro complete once the globe has settled
+      if (!introMarked) {
+        introMarked = true;
+        setIntroComplete();
+      }
     }
 
-    // ── Inner spin: rotates around local Y (= the tilted axis) ─
+    // ── Position — scroll-driven (Home → About) ─────────────────────────
+    // Smoothstep the progress for a snappier feel
+    const sp = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
+    
+    // X: Move left
+    outer.position.x = lerp(HOME_GLOBE_X, ABOUT_GLOBE_X, sp);
+    
+    // Y: If intro is fully done, lerp from bottom to the centered About placement.
+    // (During intro (t < TIMING.FORM_END), it's handled above).
+    if (t >= TIMING.FORM_END) {
+      outer.position.y = lerp(GLOBE_OFFSET_Y, ABOUT_GLOBE_Y, sp);
+    }
+
+    // Reduce only the settled About globe to 60% of its Home size.
+    outer.scale.setScalar(lerp(HOME_SCALE, ABOUT_SCALE, sp));
+
+    // ── Continuous spin (never reset) ──────────────────────
     if (t > TIMING.FORM_START) {
       spin.rotation.y += delta * GLOBE_ROTATION_SPEED;
     }
 
-    // ── Hero overlay opacity ────────────────────
+    // ── Hero overlay opacity ────────────────────────────────
     const heroAlpha = getHeroOpacity(t);
-    if (heroAlpha > 0) {
-      setHeroOpacity(heroAlpha);
-    }
+    setHeroOpacity(heroAlpha);
   });
 
   return (
