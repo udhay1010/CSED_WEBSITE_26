@@ -15,7 +15,7 @@ import { useIntroStore } from "../../../../store/introStore";
  * the Three.js canvas (z-2) are visible behind this section.
  */
 function Hero() {
-  const canvasRef  = useRef(null);
+  const canvasRef = useRef(null);
   const heroOpacity = useIntroStore((s) => s.heroOpacity);
 
   // ── Stars canvas (subtle ambient stars behind the text) ──
@@ -28,21 +28,21 @@ function Hero() {
     let stars = [];
 
     const resize = () => {
-      canvas.width  = window.innerWidth;
+      canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
     const createStars = () => {
       stars = Array.from({ length: 280 }, () => ({
-        x:           Math.random() * canvas.width,
-        y:           Math.random() * canvas.height,
-        radius:      Math.random() * 1.4 + 0.3,
-        alpha:       0,
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 1.4 + 0.3,
+        alpha: 0,
         targetAlpha: Math.random() * 0.8 + 0.2,
         twinkleSpeed: Math.random() * 0.012 + 0.004,
-        twinkleDir:  1,
-        fadeIn:      true,
-        fadeSpeed:   Math.random() * 0.008 + 0.003,
+        twinkleDir: 1,
+        fadeIn: true,
+        fadeSpeed: Math.random() * 0.008 + 0.003,
       }));
     };
 
@@ -57,7 +57,7 @@ function Hero() {
 
         star.alpha += star.twinkleSpeed * star.twinkleDir;
         if (star.alpha >= star.targetAlpha) {
-          star.alpha      = star.targetAlpha;
+          star.alpha = star.targetAlpha;
           star.twinkleDir = -1;
         } else if (star.alpha <= star.targetAlpha * 0.25) {
           star.twinkleDir = 1;
@@ -65,9 +65,9 @@ function Hero() {
 
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle    = `rgba(255, 255, 255, ${star.alpha})`;
-        ctx.shadowColor  = "rgba(200, 200, 255, 0.6)";
-        ctx.shadowBlur   = 4;
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+        ctx.shadowColor = "rgba(200, 200, 255, 0.6)";
+        ctx.shadowBlur = 4;
         ctx.fill();
       });
 
@@ -78,7 +78,10 @@ function Hero() {
     createStars();
     draw();
 
-    const onResize = () => { resize(); createStars(); };
+    const onResize = () => {
+      resize();
+      createStars();
+    };
     window.addEventListener("resize", onResize);
 
     return () => {
@@ -107,37 +110,48 @@ function Hero() {
 
       {/* Hero text — fades in only after intro animation completes */}
       <div
-        className="intro-heading relative z-10"
+        className="intro-heading relative z-10 flex flex-col items-center gap-3"
         style={{ opacity: heroOpacity, transition: "opacity 0.3s ease" }}
       >
-        <p
-          className="font-[Outfit] uppercase tracking-[0.55em] text-white"
-          style={{ fontSize: "55px", fontWeight: 900, lineHeight: 1.8, letterSpacing: "0.55em", textShadow: redShadow }}
+        {/* H1 — short-form, dominant headline */}
+        <h1
+          className="font-[Outfit] uppercase text-white m-0"
+          style={{
+            fontSize: "clamp(108px, 16.5vw, 195px)",
+            fontWeight: 900,
+            lineHeight: 1,
+            letterSpacing: "0.38em",
+            textShadow: redShadow,
+          }}
         >
-          Center for
-        </p>
-        <p
-          className="font-[Outfit] uppercase text-white"
-          style={{ fontSize: "55px", fontWeight: 900, letterSpacing: "0.42em", textShadow: redShadow, lineHeight: 1.8 }}
-        >
-          Social Entrepreneurship
-        </p>
-        <p
-          className="font-[Outfit] uppercase text-white"
-          style={{ fontSize: "55px", fontWeight: 900, letterSpacing: "0.42em", textShadow: redShadow, lineHeight: 1.8 }}
-        >
-          <span style={{ color: "var(--red)", textShadow: whiteShadow }}>&</span>{" "}
-          Development
-        </p>
+          CSED
+        </h1>
 
-        <p className="mx-auto mt-8 max-w-xl text-base leading-relaxed text-white/55 md:text-lg">
+        {/* H2 — full name, styled subheading */}
+        <h2
+          className="font-[Outfit] uppercase text-white/75 m-0"
+          style={{
+            fontSize: "clamp(22px, 1.58vw, 30px)",
+            fontWeight: 600,
+            letterSpacing: "0.5em",
+            textShadow: "0 0 14px rgba(230,57,70,0.5)",
+          }}
+        >
+          Center for Social Entrepreneurship
+          <span style={{ color: "var(--red)", margin: "0 0.45em" }}>&</span>
+          Development
+        </h2>
+
+        {/* Paragraph — tagline body text */}
+        <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-white/45 md:text-base">
           Building Bridges to a Better World Through{" "}
           <span
             style={{
-              background: "linear-gradient(264deg, rgb(255, 140, 34) -44.99%, rgb(255, 237, 172) 155.84%)",
+              background:
+                "linear-gradient(264deg, rgb(255, 140, 34) -44.99%, rgb(255, 237, 172) 155.84%)",
               WebkitBackgroundClip: "text",
-              WebkitTextFillColor:  "transparent",
-              backgroundClip:       "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
             }}
           >
             Social Entrepreneurship

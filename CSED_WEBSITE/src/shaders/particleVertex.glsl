@@ -92,12 +92,31 @@ void main() {
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
+    // ── Back-face soft-cull ────────────────────────
+    // Once a particle has settled on the globe surface we compare its
+    // outward normal (aTargetPosition direction, in world space) to the
+    // vector from the particle to the camera.  Particles on the far
+    // hemisphere face away from the camera and are faded out, so red
+    // ocean dots and black/white land dots never overlap on-screen.
+    float backFade = 1.0;
+    if (morphT > 0.01) {
+        vec3 worldNormal = normalize(
+            (modelMatrix * vec4(normalize(aTargetPosition), 0.0)).xyz
+        );
+        vec3 worldPos = (modelMatrix * vec4(pos, 1.0)).xyz;
+        vec3 toCam    = normalize(cameraPosition - worldPos);
+        float facing  = dot(worldNormal, toCam);
+        // Soft edge: fully visible at facing > 0.15, fully gone at facing < 0
+        backFade = smoothstep(0.0, 0.15, facing) * morphT
+                 + (1.0 - morphT); // let intro/scatter particles pass freely
+    }
+
     // ── Point size with perspective attenuation ────
     float baseSize = aSize * uPixelRatio;
-    gl_PointSize = baseSize * (50.0 / -mvPosition.z) * growT;
-    gl_PointSize = max(gl_PointSize, 0.5);
+    gl_PointSize = baseSize * (50.0 / -mvPosition.z) * growT * backFade;
+    gl_PointSize = max(gl_PointSize * backFade, 0.0);
 
     // ── Output to fragment ─────────────────────────
     vColor = aColor;
-    vAlpha = growT;
+    vAlpha = growT * backFade;
 }

@@ -6,6 +6,7 @@ import {
   TIMING,
   COLORS,
   RED_RATIO_INTRO,
+  RED_RATIO_GLOBE,
   SIZE_INTRO,
 } from "./particleConfig";
 import { latLonToVec3 } from "../../utils/globeUtils";
@@ -14,13 +15,15 @@ import { isLand, randomLandLatLon } from "../../utils/earthTexture";
 // ── Grid texture parameters ─────────────────────────────────────
 // A regular lat/lon grid (cos-adjusted per row) creates the distinctive
 // "globe texture" look — dots visibly following latitude/longitude lines.
+// Land cells get a white dot (continent shapes). A fraction of ocean
+// cells get a red dot for ~70% overall globe fill feel.
 const LAT_STEP   = 0.55;   // degrees between each latitude row
 const LON_BASE   = 0.75;   // longitude step at equator (widens at poles via cos)
-const OCEAN_PROB = 0.025;  // fraction of ocean grid cells that become a red dot
+const OCEAN_PROB = 0.18;   // ~18% of ocean cells → red dot for ~70% fill
 
-// Globe particle sizes (separate from intro)
-const LAND_SIZE  = [1.5, 2.4]; // white continent dots — prominent
-const OCEAN_SIZE = [0.9, 1.4]; // red ocean dots — subtle
+// Globe particle sizes
+const LAND_SIZE  = [1.5, 2.4]; // white continent dots
+const OCEAN_SIZE = [1.6, 2.8]; // red ocean dots — slightly prominent
 
 // ── Helpers ─────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -34,9 +37,8 @@ function shuffle(arr) {
 /**
  * Build a cos-adjusted lat/lon grid of Three.js Vector3 positions.
  *
- * Longitude step is divided by cos(lat) so dots stay equally spaced
- * on the sphere surface rather than crowding at the poles — this is
- * exactly what creates the "globe texture" seen in the reference.
+ * Land cells → white particles (continent shapes).
+ * ~18% of ocean cells → red particles (scattered fill, ~70% overall).
  *
  * Returns two shuffled arrays:
  *   land  — positions on continents  → white particles
@@ -46,6 +48,10 @@ function buildGlobeGrid(radius) {
   const land  = [];
   const ocean = [];
 
+  // How far (degrees) a red dot must be from any land cell.
+  // 2° ≈ ~220 km at the equator — keeps red dots clearly off continent edges.
+  const OCEAN_BUFFER = 2.0;
+
   for (let lat = -88; lat <= 88; lat += LAT_STEP) {
     const cosLat  = Math.cos((lat * Math.PI) / 180);
     const lonStep = LON_BASE / Math.max(cosLat, 0.14); // clamp near poles
@@ -54,8 +60,19 @@ function buildGlobeGrid(radius) {
       const v = latLonToVec3(lat, lon, radius);
       if (isLand(lat, lon)) {
         land.push(v);
-      } else if (Math.random() < OCEAN_PROB) {
-        ocean.push(v);
+      } else {
+        // Only place a red dot if ALL 4 cardinal neighbours are also ocean.
+        // This creates a buffer zone around continents so red and white
+        // particles never appear at the same visual location.
+        const clearOfLand =
+          !isLand(lat + OCEAN_BUFFER, lon) &&
+          !isLand(lat - OCEAN_BUFFER, lon) &&
+          !isLand(lat, lon + OCEAN_BUFFER) &&
+          !isLand(lat, lon - OCEAN_BUFFER);
+
+        if (clearOfLand && Math.random() < OCEAN_PROB) {
+          ocean.push(v);
+        }
       }
     }
   }
@@ -79,7 +96,7 @@ function buildGlobeGrid(radius) {
  *   aColor          vec3  — pure red or pure white
  */
 export function createParticleGeometry() {
-  // Build grid before allocating typed arrays (isLand() initialises canvas once)
+  // Build continent-shaped grid (land = white, sparse ocean = red)
   const { land, ocean } = buildGlobeGrid(GLOBE_RADIUS);
 
   const geometry        = new THREE.BufferGeometry();
@@ -94,8 +111,8 @@ export function createParticleGeometry() {
   const maxGen     = Math.floor(Math.log2(INTRO_PARTICLES));
   const globeCount = PARTICLE_COUNT - INTRO_PARTICLES;
 
-  // Ocean capped at 8% of globe budget (keeps continents dominant)
-  const oceanCount = Math.min(ocean.length, Math.floor(globeCount * 0.08));
+  // Ocean capped at 40% of globe budget so continents stay dominant
+  const oceanCount = Math.min(ocean.length, Math.floor(globeCount * 0.40));
   const landCount  = globeCount - oceanCount;
 
   for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -140,18 +157,18 @@ export function createParticleGeometry() {
       let tp;
       if (gi < landCount) {
         // ── White continent dot ─────────────────
-        tp = land[gi % land.length]; // wrap if grid generated fewer than budget
+        tp = land[gi % land.length];
         colors[i3]     = COLORS.WHITE[0];
         colors[i3 + 1] = COLORS.WHITE[1];
         colors[i3 + 2] = COLORS.WHITE[2];
         sizes[i] = LAND_SIZE[0] + Math.random() * (LAND_SIZE[1] - LAND_SIZE[0]);
       } else {
-        // ── Red ocean dot (sparse) ──────────────
+        // ── Pure red ocean dot ──────────────────
         const oi = gi - landCount;
         tp = ocean[oi % ocean.length];
-        colors[i3]     = COLORS.RED[0];
-        colors[i3 + 1] = COLORS.RED[1];
-        colors[i3 + 2] = COLORS.RED[2];
+        colors[i3]     = 1.0;  // pure red
+        colors[i3 + 1] = 0.0;
+        colors[i3 + 2] = 0.0;
         sizes[i] = OCEAN_SIZE[0] + Math.random() * (OCEAN_SIZE[1] - OCEAN_SIZE[0]);
       }
 

@@ -4,31 +4,44 @@ import { useIntroStore } from "../store/introStore";
 /**
  * useScrollProgress
  *
- * Writes a 0 → 1 value to introStore.scrollProgress as the #about
- * section scrolls into the viewport.
+ * Writes two values to introStore:
  *
- * Progress milestones:
- *   0   — About section top is at or below 85% viewport height (not yet visible)
- *   0→1 — About section top moves from 85 vh down to 10 vh
- *   1   — About section is fully scrolled in (top near viewport top)
+ * scrollProgress (0→1):
+ *   Tracks the #about section entering the viewport.
+ *   0 = About not yet visible, 1 = About fully in view.
+ *
+ * globeOpacity (1→0):
+ *   Tracks the #events section entering the viewport.
+ *   Globe fades out as Events scrolls up, fully gone when Events is centred.
  */
 export function useScrollProgress() {
   const setScrollProgress = useIntroStore((s) => s.setScrollProgress);
+  const setGlobeOpacity   = useIntroStore((s) => s.setGlobeOpacity);
 
   useEffect(() => {
-    const aboutSection = document.getElementById("about");
+    const aboutSection  = document.getElementById("about");
+    const eventsSection = document.getElementById("events");
     if (!aboutSection) return;
 
     const compute = () => {
-      const rect        = aboutSection.getBoundingClientRect();
-      const vh          = window.innerHeight;
-      const startTrigger = vh * 0.85; // transition starts when About top is 85% down
-      const endTrigger   = vh * 0.15; // transition ends when About top is 15% down
+      const vh = window.innerHeight;
 
-      const raw      = 1 - (rect.top - endTrigger) / (startTrigger - endTrigger);
-      const progress = Math.max(0, Math.min(1, raw));
+      // ── scrollProgress: About entering viewport ──────────────────
+      const aRect        = aboutSection.getBoundingClientRect();
+      const startTrigger = vh * 0.85;
+      const endTrigger   = vh * 0.15;
+      const raw          = 1 - (aRect.top - endTrigger) / (startTrigger - endTrigger);
+      setScrollProgress(Math.max(0, Math.min(1, raw)));
 
-      setScrollProgress(progress);
+      // ── globeOpacity: fade out as Events enters viewport ─────────
+      // Fade window: Events top goes from 100vh (off screen) → 30vh
+      if (eventsSection) {
+        const eRect      = eventsSection.getBoundingClientRect();
+        const fadeStart  = vh * 1.0;  // start fading when Events top hits bottom of screen
+        const fadeEnd    = vh * 0.30; // fully gone when Events top is 30% from top
+        const fadeRaw    = (eRect.top - fadeEnd) / (fadeStart - fadeEnd);
+        setGlobeOpacity(Math.max(0, Math.min(1, fadeRaw)));
+      }
     };
 
     window.addEventListener("scroll", compute, { passive: true });
@@ -39,5 +52,6 @@ export function useScrollProgress() {
       window.removeEventListener("scroll", compute);
       window.removeEventListener("resize", compute);
     };
-  }, [setScrollProgress]);
+  }, [setScrollProgress, setGlobeOpacity]);
 }
+

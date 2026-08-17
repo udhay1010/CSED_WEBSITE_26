@@ -5,9 +5,11 @@ export const useIntroStore = create((set) => ({
   heroOpacity:    0,           // 0..1 — fades in after intro animation
   introComplete:  false,
   scrollProgress: 0,           // 0 = home, 1 = about fully in view
+  globeOpacity:   1,           // 1 = visible, 0 = fully faded (past About)
 
   setPhase:          (phase)          => set({ phase }),
   setHeroOpacity:    (heroOpacity)    => set({ heroOpacity }),
   setIntroComplete:  ()               => set({ introComplete: true }),
   setScrollProgress: (scrollProgress) => set({ scrollProgress }),
+  setGlobeOpacity:   (globeOpacity)   => set({ globeOpacity }),
 }));

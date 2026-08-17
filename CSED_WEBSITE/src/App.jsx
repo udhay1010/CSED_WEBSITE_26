@@ -7,6 +7,7 @@ import Events   from "./components/sections/Events/Events";
 import Blogs    from "./components/sections/Blogs/Blogs";
 import Board    from "./components/sections/Board/Board";
 import GlobeScene from "./scene/GlobeScene";
+import { useIntroStore } from "./store/introStore";
 import "./App.css";
 
 /**
@@ -21,6 +22,8 @@ import "./App.css";
  * The GlobeScene canvas is NEVER unmounted.
  */
 function App() {
+  const globeOpacity = useIntroStore((s) => s.globeOpacity);
+
   useEffect(() => {
     const previousScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = "manual";
@@ -34,7 +37,14 @@ function App() {
   return (
     <>
       {/* ── Persistent Three.js globe canvas — fixed, z-5 ── */}
-      <div style={{ position: "fixed", inset: 0, zIndex: 5, pointerEvents: "none" }}>
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 5,
+        pointerEvents: "none",
+        opacity: globeOpacity,
+        transition: "opacity 0.4s ease-out",
+      }}>
         <GlobeScene />
       </div>
 

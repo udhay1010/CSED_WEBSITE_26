@@ -25,9 +25,9 @@ void main() {
     // Red particles (vColor.r >> vColor.gb) are preserved as-is.
     float isWhite = step(0.9, vColor.r) * step(0.9, vColor.g) * step(0.9, vColor.b);
 
-    // On white background: white particles → near-black (0.08)
+    // On white background: white particles → pitch black (#000000)
     // On dark background:  keep original colour
-    vec3 finalColor = mix(vColor, vec3(0.08), uColorInvert * isWhite);
+    vec3 finalColor = mix(vColor, vec3(0.0), uColorInvert * isWhite);
 
     // Flip alpha logic for light background so particles are properly
     // composited with NormalBlending
