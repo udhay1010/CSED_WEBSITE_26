@@ -1,60 +1,38 @@
-import { useEffect } from "react";
-import { useIntroStore } from "../store/introStore";
+import { useEffect } from 'react';
+import { useIntroStore } from '../store/introStore';
 
-/**
- * useScrollProgress
- *
- * Writes two values to introStore:
- *
- * scrollProgress (0→1):
- *   Tracks the #about section entering the viewport.
- *   0 = About not yet visible, 1 = About fully in view.
- *
- * globeOpacity (1→0):
- *   Tracks the #events section entering the viewport.
- *   Globe fades out as Events scrolls up, fully gone when Events is centred.
- */
 export function useScrollProgress() {
-  const setScrollProgress = useIntroStore((s) => s.setScrollProgress);
-  const setGlobeOpacity   = useIntroStore((s) => s.setGlobeOpacity);
-
   useEffect(() => {
-    const aboutSection  = document.getElementById("about");
-    const eventsSection = document.getElementById("events");
-    if (!aboutSection) return;
-
+    const about = document.getElementById('about');
+    const events = document.getElementById('events');
+    const stage = document.querySelector('[data-globe-stage]');
+    if (!about) return;
+    let frame = 0;
     const compute = () => {
-      const vh    = window.innerHeight;
-      const vw    = window.innerWidth;
-      const isMobile = vw < 768; // md breakpoint
-
-      // ── scrollProgress: About entering viewport ──────────────────
-      const aRect        = aboutSection.getBoundingClientRect();
-      const startTrigger = vh * 0.85;
-      const endTrigger   = vh * 0.15;
-      const raw          = 1 - (aRect.top - endTrigger) / (startTrigger - endTrigger);
-      const sp           = Math.max(0, Math.min(1, raw));
-      setScrollProgress(sp);
-
-      // ── globeOpacity ─────────────────────────────────────────────
-      if (eventsSection) {
-        // Fade out as Events section scrolls into view
-        const eRect     = eventsSection.getBoundingClientRect();
-        const fadeStart = vh * 1.0;  // start when Events top hits bottom edge
-        const fadeEnd   = vh * 0.30; // fully gone when Events top is 30% from top
-        const fadeRaw   = (eRect.top - fadeEnd) / (fadeStart - fadeEnd);
-        setGlobeOpacity(Math.max(0, Math.min(1, fadeRaw)));
-      }
+      frame = 0;
+      const vh = window.innerHeight;
+      const top = about.getBoundingClientRect().top;
+      const progress = Math.max(0, Math.min(1, (vh - top) / (vh - 80)));
+      // Release the stage as About leaves, before any unrelated section enters.
+      const eventsTop = events ? events.getBoundingClientRect().top : vh;
+      const opacity = Math.max(0, Math.min(1, (eventsTop - vh * 0.8) / (vh * 0.2)));
+      // Clip at the section boundary so the persistent canvas never paints over Events.
+      if (stage) stage.style.clipPath = `inset(0px 0px ${Math.max(0, vh - eventsTop)}px 0px)`;
+      const state = useIntroStore.getState();
+      if (state.scrollProgress !== progress) state.setScrollProgress(progress);
+      if (state.globeOpacity !== opacity) state.setGlobeOpacity(opacity);
     };
-
-    window.addEventListener("scroll", compute, { passive: true });
-    window.addEventListener("resize", compute, { passive: true });
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(compute); };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
     compute();
-
     return () => {
-      window.removeEventListener("scroll", compute);
-      window.removeEventListener("resize", compute);
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
     };
-  }, [setScrollProgress, setGlobeOpacity]);
+  }, []);
 }
-

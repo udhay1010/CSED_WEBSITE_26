@@ -25,7 +25,7 @@ export default function About() {
   const [hasEntered, setHasEntered] = useState(false);
 
   const scrollProgress = useIntroStore((s) => s.scrollProgress);
-  const ABOUT_REVEAL_THRESHOLD = 0.5;
+  const ABOUT_REVEAL_THRESHOLD = 0.82;
   const showAbout = scrollProgress >= ABOUT_REVEAL_THRESHOLD;
 
   const revealStyle = {
@@ -320,7 +320,7 @@ export default function About() {
       <div className="w-[35%] h-full hidden md:block pointer-events-none flex-shrink-0 relative" style={{ zIndex: 20 }} />
 
       {/* Right content column — white background, text readable above canvas */}
-      <div className="w-full md:w-[65%] h-full relative" style={{ zIndex: 20 }}>
+      <div className="about-content w-full md:w-[65%] h-full relative" style={{ zIndex: 20 }}>
         <div style={revealStyle} className="w-full h-full flex flex-col justify-center px-6 sm:px-10">
 
         <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wide text-black mb-6 md:mb-8">

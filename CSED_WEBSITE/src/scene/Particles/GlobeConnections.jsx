@@ -1,107 +1,52 @@
-import { useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
-import { GLOBE_RADIUS, TIMING } from "./particleConfig";
-import { randomLandLatLon } from "../../utils/earthTexture";
-import { latLonToVec3 } from "../../utils/globeUtils";
-
-// ── Tuning ─────────────────────────────────────────
-const ARC_COUNT   = 16;
-const SPIKE_COUNT = 20;
-const SPIKE_MIN   = 0.14; // min spike length as fraction of radius
-const SPIKE_MAX   = 0.42; // max spike length as fraction of radius
-
-function landPoint(radius) {
-  const [lat, lon] = randomLandLatLon();
-  return latLonToVec3(lat, lon, radius);
-}
-
-export default function GlobeConnections() {
-  // ── Build everything once ─────────────────────────
-  const { arcLines, spikeLines, tipPoints } = useMemo(() => {
-    // Shared materials
-    const arcMat = new THREE.LineBasicMaterial({
-      color:       new THREE.Color(0xe63946),
-      transparent: true,
-      opacity:     0,
-      blending:    THREE.AdditiveBlending,
-      depthWrite:  false,
-    });
-
-    const spikeMat = new THREE.LineBasicMaterial({
-      color:       new THREE.Color(1.0, 0.38, 0.32),
-      transparent: true,
-      opacity:     0,
-      blending:    THREE.AdditiveBlending,
-      depthWrite:  false,
-    });
-
-    const tipMat = new THREE.PointsMaterial({
-      color:           new THREE.Color(1.0, 0.50, 0.45),
-      size:            0.45,
-      transparent:     true,
-      opacity:         0,
-      blending:        THREE.AdditiveBlending,
-      depthWrite:      false,
-      sizeAttenuation: true,
-    });
-
-    // ── Arcs ─────────────────────────────────────────
-    const arcLines = [];
-    for (let i = 0; i < ARC_COUNT; i++) {
-      const p1   = landPoint(GLOBE_RADIUS);
-      const p2   = landPoint(GLOBE_RADIUS);
-      const ctrl = p1.clone().add(p2).multiplyScalar(0.5);
-      ctrl.normalize().multiplyScalar(
-        ctrl.length() + GLOBE_RADIUS * (0.22 + Math.random() * 0.30)
-      );
-      const curve  = new THREE.QuadraticBezierCurve3(p1, ctrl, p2);
-      const geom   = new THREE.BufferGeometry().setFromPoints(curve.getPoints(64));
-      arcLines.push(new THREE.Line(geom, arcMat));
+export default function GlobeConnections({ reducedMotion }) {
+  const pulse = useRef();
+  const { lines, tips, routes } = useMemo(() => {
+    const vertices = [], endpoints = [], routes = [];
+    for (let i = 0; i < 22; i++) {
+      const lat = (-35 + (i * 31 % 108)) * Math.PI / 180;
+      const lon = i * 137.508 * Math.PI / 180;
+      const base = new THREE.Vector3(Math.cos(lat) * Math.cos(lon), Math.sin(lat), -Math.cos(lat) * Math.sin(lon));
+      const tip = base.clone().multiplyScalar(1.035 + (i % 4) * 0.018);
+      vertices.push(...base.toArray(), ...tip.toArray());
+      endpoints.push(...tip.toArray());
+      if (i % 3 === 0) {
+        const end = base.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.28);
+        const points = [];
+        for (let j = 0; j <= 32; j++) {
+          const t = j / 32;
+          points.push(base.clone().lerp(end, t).normalize().multiplyScalar(1.003 + Math.sin(t * Math.PI) * 0.025));
+        }
+        for (let j = 1; j < points.length; j++) vertices.push(...points[j - 1].toArray(), ...points[j].toArray());
+        routes.push(points);
+      }
     }
-
-    // ── Spikes + tip dots ─────────────────────────────
-    const spikeLines = [];
-    const tipVerts   = [];
-    for (let i = 0; i < SPIKE_COUNT; i++) {
-      const base = landPoint(GLOBE_RADIUS * 0.99);
-      const len  = SPIKE_MIN + Math.random() * (SPIKE_MAX - SPIKE_MIN);
-      const tip  = base.clone().normalize().multiplyScalar(GLOBE_RADIUS * (1 + len));
-      const geom = new THREE.BufferGeometry().setFromPoints([base, tip]);
-      spikeLines.push(new THREE.Line(geom, spikeMat));
-      tipVerts.push(tip);
-    }
-
-    const tipGeom   = new THREE.BufferGeometry().setFromPoints(tipVerts);
-    const tipPoints = new THREE.Points(tipGeom, tipMat);
-
-    return { arcLines, spikeLines, tipPoints };
+    return { lines: new Float32Array(vertices), tips: new Float32Array(endpoints), routes };
   }, []);
-
-  // ── Fade in after globe finishes forming ──────────
   useFrame(({ clock }) => {
-    const t = clock.elapsedTime;
-    if (t <= TIMING.FORM_END) return;
-
-    const raw = Math.min((t - TIMING.FORM_END) / 1.8, 1.0);
-    const opacity = raw * raw * (3 - 2 * raw); // smoothstep
-
-    // All lines share the same material instance — update once
-    if (arcLines[0]) arcLines[0].material.opacity   = opacity * 0.70;
-    if (spikeLines[0]) spikeLines[0].material.opacity = opacity * 0.90;
-    tipPoints.material.opacity = opacity;
+    if (!pulse.current || reducedMotion) return;
+    const t = (clock.elapsedTime * 0.12) % 1;
+    const points = routes[Math.floor(clock.elapsedTime * 0.12) % routes.length];
+    const f = t * 32;
+    pulse.current.position.copy(points[Math.floor(f)]).lerp(points[Math.min(32, Math.floor(f) + 1)], f % 1);
   });
-
   return (
     <group>
-      {arcLines.map((line, i) => (
-        <primitive key={`arc-${i}`} object={line} />
-      ))}
-      {spikeLines.map((line, i) => (
-        <primitive key={`spike-${i}`} object={line} />
-      ))}
-      <primitive object={tipPoints} />
+      <lineSegments>
+        <bufferGeometry><bufferAttribute attach="attributes-position" args={[lines, 3]} /></bufferGeometry>
+        <lineBasicMaterial color="#d71932" transparent opacity={0.38} depthWrite={false} />
+      </lineSegments>
+      <points>
+        <bufferGeometry><bufferAttribute attach="attributes-position" args={[tips, 3]} /></bufferGeometry>
+        <pointsMaterial color="#ff354c" size={0.005} sizeAttenuation transparent opacity={0.8} depthWrite={false} />
+      </points>
+      <mesh ref={pulse} visible={!reducedMotion}>
+        <sphereGeometry args={[0.0035, 6, 6]} />
+        <meshBasicMaterial color="#ff8b94" />
+      </mesh>
     </group>
   );
 }

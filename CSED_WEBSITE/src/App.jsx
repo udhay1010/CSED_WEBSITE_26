@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Navbar   from "./components/layout/Navbar/Navbar";
 import Footer   from "./components/layout/Footer/Footer";
 import Home     from "./components/sections/Home/Home";
@@ -37,13 +37,13 @@ function App() {
   return (
     <>
       {/* ── Persistent Three.js globe canvas — fixed, z-5 ── */}
-      <div style={{
+      <div aria-hidden="true" data-globe-stage style={{
         position: "fixed",
         inset: 0,
         zIndex: 5,
         pointerEvents: "none",
         opacity: globeOpacity,
-        transition: "opacity 0.4s ease-out",
+        overflow: "clip",
       }}>
         <GlobeScene />
       </div>

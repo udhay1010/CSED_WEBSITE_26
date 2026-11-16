@@ -1,0 +1,370 @@
+{
+  "results": [
+    {
+      "name": "desktop",
+      "state": "top",
+      "progress": 0,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0929324999999293,
+        0
+      ],
+      "calls": 6,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 1536,
+      "scrollWidth": 1536,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 0
+    },
+    {
+      "name": "desktop",
+      "state": "early",
+      "progress": 0.20021186440677965,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0795699999999304,
+        0
+      ],
+      "calls": 6,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 1536,
+      "scrollWidth": 1536,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 269
+    },
+    {
+      "name": "desktop",
+      "state": "middle",
+      "progress": 0.5,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0660224999997832,
+        0
+      ],
+      "calls": 6,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 1536,
+      "scrollWidth": 1536,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 552
+    },
+    {
+      "name": "desktop",
+      "state": "near",
+      "progress": 0.8495762711864406,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0526375000000072,
+        0
+      ],
+      "calls": 7,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 1536,
+      "scrollWidth": 1536,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 882
+    },
+    {
+      "name": "desktop",
+      "state": "final",
+      "progress": 1,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -0.7028324999999331,
+        0
+      ],
+      "calls": 7,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 1536,
+      "scrollWidth": 1536,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 1024
+    },
+    {
+      "name": "desktop",
+      "state": "reverse",
+      "progress": 0,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -0.6884224999997841,
+        0
+      ],
+      "calls": 7,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 1536,
+      "scrollWidth": 1536,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 0
+    },
+    {
+      "name": "tablet",
+      "state": "top",
+      "progress": 0,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.094014999999857,
+        0
+      ],
+      "calls": 6,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 768,
+      "scrollWidth": 768,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 0
+    },
+    {
+      "name": "tablet",
+      "state": "early",
+      "progress": 0.20021186440677965,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0811574999999325,
+        0
+      ],
+      "calls": 6,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 768,
+      "scrollWidth": 768,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 269
+    },
+    {
+      "name": "tablet",
+      "state": "middle",
+      "progress": 0.5,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0684875000000071,
+        0
+      ],
+      "calls": 6,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 768,
+      "scrollWidth": 768,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 552
+    },
+    {
+      "name": "tablet",
+      "state": "near",
+      "progress": 0.8495762711864406,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0558074999999334,
+        0
+      ],
+      "calls": 7,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 768,
+      "scrollWidth": 768,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 882
+    },
+    {
+      "name": "tablet",
+      "state": "final",
+      "progress": 1,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -0.7044849999997866,
+        0
+      ],
+      "calls": 7,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 768,
+      "scrollWidth": 768,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 1024
+    },
+    {
+      "name": "tablet",
+      "state": "reverse",
+      "progress": 0,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -0.691274999999637,
+        0
+      ],
+      "calls": 7,
+      "points": 71223,
+      "nestedScrollers": 0,
+      "width": 768,
+      "scrollWidth": 768,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 0
+    },
+    {
+      "name": "mobile",
+      "state": "top",
+      "progress": 0,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0923725000001538,
+        0
+      ],
+      "calls": 6,
+      "points": 21370,
+      "nestedScrollers": 0,
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 0
+    },
+    {
+      "name": "mobile",
+      "state": "early",
+      "progress": 0.20026178010471204,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.08021750000008,
+        0
+      ],
+      "calls": 6,
+      "points": 21370,
+      "nestedScrollers": 0,
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 233
+    },
+    {
+      "name": "mobile",
+      "state": "middle",
+      "progress": 0.5,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.067890000000231,
+        0
+      ],
+      "calls": 6,
+      "points": 21370,
+      "nestedScrollers": 0,
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 462
+    },
+    {
+      "name": "mobile",
+      "state": "near",
+      "progress": 0.849476439790576,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -1.0554025000002323,
+        0
+      ],
+      "calls": 7,
+      "points": 21370,
+      "nestedScrollers": 0,
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 729
+    },
+    {
+      "name": "mobile",
+      "state": "final",
+      "progress": 1,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -0.7035325000003035,
+        0
+      ],
+      "calls": 7,
+      "points": 21370,
+      "nestedScrollers": 0,
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 844
+    },
+    {
+      "name": "mobile",
+      "state": "reverse",
+      "progress": 0,
+      "opacity": 1,
+      "persistent": true,
+      "sameGeometry": true,
+      "rotations": [
+        -0.6910200000003035,
+        0
+      ],
+      "calls": 6,
+      "points": 21370,
+      "nestedScrollers": 0,
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollbar": "none",
+      "webgl": true,
+      "scrollY": 0
+    }
+  ],
+  "errors": [],
+  "externalFailures": [
+    "https://picsum.photos/seed/csed-hero/1600/900: net::ERR_NETWORK_ACCESS_DENIED",
+    "https://picsum.photos/seed/csed-hero/1600/900: net::ERR_NETWORK_ACCESS_DENIED",
+    "https://picsum.photos/seed/csed-hero/1600/900: net::ERR_NETWORK_ACCESS_DENIED"
+  ]
+}

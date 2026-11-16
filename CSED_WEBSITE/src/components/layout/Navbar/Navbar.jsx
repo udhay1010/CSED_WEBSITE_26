@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const destinations = { Home: 'home', About: 'about', Events: 'events', Blog: 'blogs', Board: 'board', Contact: 'site-footer' };
+
 function Navbar() {
   const links = ["Home", "About", "Events", "Blog", "Board", "Contact"];
   const [active, setActive] = useState("Home");
@@ -7,12 +9,12 @@ function Navbar() {
 
   useEffect(() => {
     const updateActiveSection = () => {
-      const about = document.getElementById("about");
-      if (!about) return;
-
-      const rect = about.getBoundingClientRect();
       const readingLine = Math.min(window.innerHeight * 0.4, 300);
-      const nextActive = rect.top <= readingLine && rect.bottom > readingLine ? "About" : "Home";
+      let nextActive = 'Home';
+      for (const [label, id] of Object.entries(destinations)) {
+        const section = document.getElementById(id);
+        if (section && section.getBoundingClientRect().top <= readingLine) nextActive = label;
+      }
 
       setActive((current) => (current === nextActive ? current : nextActive));
     };
@@ -28,13 +30,10 @@ function Navbar() {
   }, []);
 
   const selectLink = (link) => {
-    if (link === "About") {
-      const about = document.getElementById("about");
-      if (about) {
-        const navbarHeight = 80;
-        const targetY = window.scrollY + about.getBoundingClientRect().top - navbarHeight;
-        window.scrollTo({ top: targetY, behavior: "smooth" });
-      }
+    const section = document.getElementById(destinations[link]);
+    if (section) {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: window.scrollY + section.getBoundingClientRect().top - 80, behavior: reduced ? 'instant' : 'smooth' });
     }
 
     setActive(link);
@@ -66,7 +65,7 @@ function Navbar() {
             </button>
           ))}
         </div>
-        <button className="hidden shrink-0 items-center gap-2 rounded-full border border-[var(--red)] px-6 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] text-white transition-all hover:bg-[var(--red)] hover:shadow-[0_0_25px_rgba(230,57,70,.4)] sm:flex">
+        <button onClick={() => selectLink("Contact")} className="hidden shrink-0 items-center gap-2 rounded-full border border-[var(--red)] px-6 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] text-white transition-all hover:bg-[var(--red)] hover:shadow-[0_0_25px_rgba(230,57,70,.4)] sm:flex">
           Join Us <span aria-hidden="true">→</span>
         </button>
         <button
@@ -91,7 +90,7 @@ function Navbar() {
               {link}
             </button>
           ))}
-          <button className="mt-3 rounded-full border border-[var(--red)] px-5 py-2 text-xs uppercase tracking-[0.1em]">
+          <button onClick={() => selectLink("Contact")} className="mt-3 rounded-full border border-[var(--red)] px-5 py-2 text-xs uppercase tracking-[0.1em]">
             Join Us →
           </button>
         </div>

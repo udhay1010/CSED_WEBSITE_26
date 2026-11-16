@@ -2,8 +2,8 @@ import { create } from "zustand";
 
 export const useIntroStore = create((set) => ({
   phase:          "SPAWN",
-  heroOpacity:    0,           // 0..1 — fades in after intro animation
-  introComplete:  false,
+  heroOpacity:    1,           // Landing content stays available without WebGL.
+  introComplete:  true,
   scrollProgress: 0,           // 0 = home, 1 = about fully in view
   globeOpacity:   1,           // 1 = visible, 0 = fully faded (past About)
 
