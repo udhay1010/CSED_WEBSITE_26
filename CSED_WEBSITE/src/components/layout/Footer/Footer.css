@@ -90,6 +90,17 @@
   letter-spacing: 0.02em;
 }
 
+.brand-logo span {
+  display: inline-block;
+  color: var(--white);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.brand-logo span:hover {
+  color: var(--red);
+}
+
 .brand-desc {
   color: var(--muted);
   margin: 0;

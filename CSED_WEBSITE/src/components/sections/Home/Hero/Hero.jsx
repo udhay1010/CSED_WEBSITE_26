@@ -98,7 +98,7 @@ function Hero() {
 
   return (
     <section
-      className="relative flex h-screen flex-col items-center justify-center px-6 text-center -translate-y-24 md:-translate-y-32"
+      className="relative flex h-screen flex-col items-center justify-center px-4 sm:px-6 text-center -translate-y-36 xs:-translate-y-40 sm:-translate-y-32 md:-translate-y-24 lg:-translate-y-32 4xl:-translate-y-40"
       style={{ background: "transparent" }}
     >
       {/* Subtle ambient stars — rendered behind hero text */}
@@ -110,17 +110,16 @@ function Hero() {
 
       {/* Hero text — fades in only after intro animation completes */}
       <div
-        className="intro-heading relative z-10 flex flex-col items-center gap-3"
+        className="intro-heading relative z-10 flex flex-col items-center gap-2 sm:gap-3"
         style={{ opacity: heroOpacity, transition: "opacity 0.3s ease" }}
       >
         {/* H1 — short-form, dominant headline */}
         <h1
-          className="font-[Outfit] uppercase text-white m-0"
+          className="font-[Outfit] uppercase text-white m-0 tracking-[0.15em] sm:tracking-[0.38em]"
           style={{
-            fontSize: "clamp(108px, 16.5vw, 195px)",
+            fontSize: "clamp(54px, 18vw, 195px)",
             fontWeight: 900,
             lineHeight: 1,
-            letterSpacing: "0.38em",
             textShadow: redShadow,
           }}
         >
@@ -129,21 +128,20 @@ function Hero() {
 
         {/* H2 — full name, styled subheading */}
         <h2
-          className="font-[Outfit] uppercase text-white/75 m-0"
+          className="font-[Outfit] uppercase text-white/75 m-0 tracking-[0.1em] sm:tracking-[0.3em] md:tracking-[0.5em] px-4 sm:px-2 leading-snug sm:leading-normal w-full max-w-[90vw] md:max-w-none"
           style={{
-            fontSize: "clamp(22px, 1.58vw, 30px)",
+            fontSize: "clamp(14px, 2vw, 30px)",
             fontWeight: 600,
-            letterSpacing: "0.5em",
             textShadow: "0 0 14px rgba(230,57,70,0.5)",
           }}
         >
           Center for Social Entrepreneurship
-          <span style={{ color: "var(--red)", margin: "0 0.45em" }}>&</span>
+          <span style={{ color: "var(--red)", margin: "0 0.3em" }}>&</span>
           Development
         </h2>
 
         {/* Paragraph — tagline body text */}
-        <p className="mx-auto mt-5 max-w-lg text-sm leading-relaxed text-white/45 md:text-base">
+        <p className="mx-auto mt-6 sm:mt-8 max-w-md md:max-w-xl text-sm sm:text-base leading-relaxed text-white/50 md:text-lg px-4">
           Building Bridges to a Better World Through{" "}
           <span
             style={{

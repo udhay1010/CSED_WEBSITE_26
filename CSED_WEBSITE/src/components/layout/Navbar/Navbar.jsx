@@ -43,9 +43,9 @@ function Navbar() {
 
   return (
     <nav className="intro-nav fixed top-0 right-0 left-0 z-[60] border-b border-white/5 bg-[var(--bg)]">
-      <div className="mx-auto flex h-20 max-w-[1900px] items-center justify-between gap-6 px-6 sm:px-10 md:px-16 lg:px-24 xl:px-32">
+      <div className="mx-auto flex h-20 max-w-[var(--breakpoint-4xl,1920px)] items-center justify-between gap-6 px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 3xl:px-32 4xl:px-40">
         <div className="shrink-0 leading-none">
-          <div className="font-[Outfit] text-4xl font-bold tracking-[0.15em] text-white select-none">
+          <div className="font-[Outfit] text-2xl sm:text-3xl md:text-4xl font-bold tracking-[0.15em] text-white select-none">
             CSE<span className="text-[var(--red)]">D</span>
           </div>
         </div>

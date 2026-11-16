@@ -52,20 +52,31 @@ export default function GlobeMesh() {
     [],
   );
 
-  useFrame(({ clock }, delta) => {
+  useFrame(({ clock, size }, delta) => {
     const t = clock.elapsedTime;
     const outer = outerRef.current;
     const spin = spinRef.current;
     if (!outer || !spin) return;
 
-    // ── Y + tilt (mirrors ParticleSystem) ────────────────
+    // ── Responsive Scales & Positions (matches ParticleSystem) ─────────
+    // Map viewport width from 480px (mobile) to 1024px (desktop)
+    const tWidth = Math.max(0, Math.min(1, (size.width - 480) / (1024 - 480)));
+    const easeW = tWidth * tWidth * (3 - 2 * tWidth);
+
+    const targetHomeScale = lerp(HOME_SCALE * 0.30, HOME_SCALE, easeW);
+    const targetAboutScale = lerp(ABOUT_SCALE * 0.55, ABOUT_SCALE, easeW);
+    const targetAboutX = lerp(0, ABOUT_GLOBE_X, easeW);
+    const targetHomeY = lerp(GLOBE_OFFSET_Y + 16.0, GLOBE_OFFSET_Y, easeW);
+    const targetAboutY = lerp(ABOUT_GLOBE_Y - 4.0, ABOUT_GLOBE_Y, easeW);
+
+    // ── Y + tilt ───────────────────────────────────────────────────────
     if (t < TIMING.FORM_START) {
       outer.position.y = 0;
       outer.rotation.z = 0;
     } else if (t < TIMING.FORM_END) {
       const p = (t - TIMING.FORM_START) / (TIMING.FORM_END - TIMING.FORM_START);
       const ep = p * p * (3 - 2 * p);
-      outer.position.y = GLOBE_OFFSET_Y * ep;
+      outer.position.y = targetHomeY * ep;
       outer.rotation.z = -TILT_RAD * ep;
     } else {
       // Y is handled by the scroll-driven lerp below if intro is done
@@ -75,16 +86,16 @@ export default function GlobeMesh() {
     // ── Position — scroll-driven (matches ParticleSystem exactly) ───────
     const sp = scrollProgress * scrollProgress * (3 - 2 * scrollProgress);
 
-    // X: Move left
-    outer.position.x = lerp(HOME_GLOBE_X, ABOUT_GLOBE_X, sp);
+    // X: Move left (or stay centered on mobile)
+    outer.position.x = lerp(HOME_GLOBE_X, targetAboutX, sp);
 
     // Y: Lerp bottom -> centered About placement
     if (t >= TIMING.FORM_END) {
-      outer.position.y = lerp(GLOBE_OFFSET_Y, ABOUT_GLOBE_Y, sp);
+      outer.position.y = lerp(targetHomeY, targetAboutY, sp);
     }
 
-    // Match the particle globe's 60% settled About scale.
-    outer.scale.setScalar(lerp(HOME_SCALE, ABOUT_SCALE, sp));
+    // Match the particle globe's settled About scale.
+    outer.scale.setScalar(lerp(targetHomeScale, targetAboutScale, sp));
 
     // ── Continuous spin ───────────────────────────────────
     if (t > TIMING.FORM_START) {

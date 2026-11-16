@@ -133,6 +133,11 @@
   overflow: hidden;
   will-change: transform, opacity;
   transition: background 0.3s ease, transform 0.3s ease;
+
+  @media (max-width: 640px) {
+    height: 48px;
+    padding: 0 8px 0 16px;
+  }
 }
 
 .gsearch-bar:hover {
@@ -174,6 +179,10 @@
   letter-spacing: 0.03em;
   min-height: 28px;
   overflow: hidden;
+
+  @media (max-width: 640px) {
+    font-size: 14px;
+  }
 }
 
 .gsearch-typed {
@@ -286,9 +295,9 @@
   font-synthesis: none;
   -webkit-text-stroke: 0.5px #FF0000;
   font-style: normal;
-  font-size: clamp(16px, 1.9vw, 26px);
+  font-size: clamp(16px, 2.5vw, 24px);
   color: #FF0000;
-  line-height: 2.5;
+  line-height: 1.8;
   letter-spacing: 0.025em;
   text-transform: none;
   will-change: transform, opacity;

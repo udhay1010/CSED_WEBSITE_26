@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-xs: 320px;
+  --breakpoint-3xl: 1536px;
+  --breakpoint-4xl: 1920px;
+}
+
 @font-face {
   font-family: "Outfit";
   src: url("./assets/fonts/Outfit.ttf") format("truetype");

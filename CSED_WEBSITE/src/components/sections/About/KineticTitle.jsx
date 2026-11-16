@@ -33,7 +33,7 @@ export default function KineticTitle({ startAnimation = false }) {
     gsap.set(aboutInnerRef.current, { scaleY: 0, opacity: 0 });
     gsap.set(csedRef.current, { xPercent: -100 });
 
-    const gapHeight = 70;
+    const gapHeight = window.innerWidth < 640 ? 40 : 70;
 
     // 1. "ABOUT" Splits Open
     tl.to(aboutTopRef.current, {
@@ -88,7 +88,7 @@ export default function KineticTitle({ startAnimation = false }) {
   }, [startAnimation]);
 
   return (
-    <div ref={containerRef} className="flex items-center gap-6 font-bold text-5xl md:text-7xl tracking-widest uppercase cursor-default">
+    <div ref={containerRef} className="flex items-center gap-2 sm:gap-4 md:gap-6 font-bold text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-widest uppercase cursor-default">
       {/* "ABOUT" Container with Split Logic */}
       <div className="relative flex flex-col items-center justify-center overflow-hidden">
         {/* Top Half of ABOUT */}
@@ -103,10 +103,10 @@ export default function KineticTitle({ startAnimation = false }) {
         {/* Inner Reveal */}
         <div 
           ref={aboutInnerRef}
-          className="absolute top-1/2 left-0 w-full h-[70px] -translate-y-1/2 flex items-center justify-center z-10 origin-center bg-white"
+          className="absolute top-1/2 left-0 w-full h-[40px] sm:h-[60px] -translate-y-1/2 flex items-center justify-center z-10 origin-center bg-white"
         >
           <span
-            className="text-black text-2xl md:text-4xl font-black tracking-[0.4em]"
+            className="text-black text-xl sm:text-3xl md:text-4xl font-black tracking-[0.3em] sm:tracking-[0.4em]"
             spellCheck={false}
             autoCorrect="off"
             autoComplete="off"

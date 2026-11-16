@@ -319,7 +319,15 @@ export function FooterFull() {
         {/* Top row with brand copy and grouped links. */}
         <div className="footer-top">
           <div className="footer-brand">
-            <div className="brand-logo">C.S.E.D</div>
+            <div className="brand-logo" aria-label="C.S.E.D">
+              <span>C</span>
+              <span>.</span>
+              <span>S</span>
+              <span>.</span>
+              <span>E</span>
+              <span>.</span>
+              <span>D</span>
+            </div>
             <p className="brand-desc">
               Centre for Social Entrepreneurship & Development — connecting students,
               industry and community through projects, events and learning.

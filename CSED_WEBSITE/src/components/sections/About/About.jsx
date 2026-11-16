@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import gsap from "gsap";
 import SplitType from "split-type";
 import KineticTitle from "./KineticTitle";
+import { useIntroStore } from "../../../store/introStore";
 import "./About.css";
 
 const SEARCH_QUERY = "CSED VIT VELLORE";
@@ -23,6 +24,17 @@ export default function About() {
   const [phase, setPhase]         = useState("idle");
   const [hasEntered, setHasEntered] = useState(false);
 
+  const scrollProgress = useIntroStore((s) => s.scrollProgress);
+  const ABOUT_REVEAL_THRESHOLD = 0.5;
+  const showAbout = scrollProgress >= ABOUT_REVEAL_THRESHOLD;
+
+  const revealStyle = {
+    opacity: showAbout ? 1 : 0,
+    visibility: showAbout ? "visible" : "hidden",
+    transform: showAbout ? "translateY(0)" : "translateY(10px)",
+    transition: "opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s"
+  };
+
   // Intersection Observer to start animations when scrolled into view
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -32,7 +44,7 @@ export default function About() {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.95 }
     );
     if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
@@ -281,8 +293,9 @@ export default function About() {
     <section
       id="about"
       ref={containerRef}
-      className="relative w-full min-h-screen text-black flex overflow-hidden"
+      className="relative w-full text-black flex overflow-hidden mt-[80px]"
       style={{
+        height: "calc(100vh - 80px)",
         /* No z-index here so it doesn't create a stacking context */
       }}
     >
@@ -292,22 +305,27 @@ export default function About() {
       */}
       <div className="absolute inset-0 bg-white" style={{ zIndex: 0 }} />
 
-      <canvas ref={rayCanvasRef} className="absolute top-0 left-0 pointer-events-none z-30" style={{ opacity: 1 }} />
+      <div style={revealStyle} className="absolute inset-0 pointer-events-none z-30">
+        <canvas ref={rayCanvasRef} className="absolute top-0 left-0" style={{ opacity: 1 }} />
+      </div>
 
       {/* Title centered on full page width */}
       <div className="absolute top-[6vh] left-0 w-full flex justify-center z-50 pointer-events-none">
-        <KineticTitle startAnimation={hasEntered} />
+        <div style={revealStyle}>
+          <KineticTitle startAnimation={hasEntered} />
+        </div>
       </div>
 
       {/* Left spacer column — purely to push content rightwards, transparent so globe shows through */}
       <div className="w-[35%] h-full hidden md:block pointer-events-none flex-shrink-0 relative" style={{ zIndex: 20 }} />
 
       {/* Right content column — white background, text readable above canvas */}
-      <div className="w-full md:w-[65%] h-full flex flex-col justify-start pt-[calc(12vh+7rem)] px-10 relative" style={{ zIndex: 20 }}>
+      <div className="w-full md:w-[65%] h-full relative" style={{ zIndex: 20 }}>
+        <div style={revealStyle} className="w-full h-full flex flex-col justify-center px-6 sm:px-10">
 
-        <div className="flex items-center gap-3 text-3xl font-semibold tracking-wide text-black mb-8">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wide text-black mb-6 md:mb-8">
           <span ref={taglineRef} className="anim-tagline">Our Social Entrepreneurship Journey</span>
-          <span ref={starRef} className="text-[#E50914] text-5xl inline-block origin-center filter drop-shadow-[0_0_8px_rgba(229,9,20,0.5)]">✦</span>
+          <span ref={starRef} className="text-[#E50914] text-2xl md:text-4xl inline-block origin-center filter drop-shadow-[0_0_8px_rgba(229,9,20,0.5)]">✦</span>
         </div>
 
         <div ref={searchWrapperRef} className="gsearch-neon-wrapper" style={{ opacity: 0 }}>
@@ -343,10 +361,13 @@ export default function About() {
         <div ref={welcomeBlockRef} className="welcome-inline-block" style={{ display: "none" }}>
           <div ref={welcomeTextRef} className="welcome-inline-text" />
         </div>
+        </div>
       </div>
 
-      <div className="absolute right-0 bottom-0 h-[92vh] w-[45vw] flex items-end justify-end z-0 pointer-events-none">
-        <img src="/hero-portrait-csed.png" alt="CSED Hero Portrait" className="w-full h-full object-contain object-right-bottom opacity-90" />
+      <div className="absolute right-0 bottom-0 h-[45vh] sm:h-[55vh] md:h-[70vh] w-[70vw] sm:w-[50vw] md:w-[35vw] flex items-end justify-end z-0 pointer-events-none opacity-40 md:opacity-90">
+        <div style={revealStyle} className="w-full h-full">
+          <img src="/hero-portrait-csed.png" alt="CSED Hero Portrait" className="w-full h-full object-contain object-right-bottom" />
+        </div>
       </div>
     </section>
   );
