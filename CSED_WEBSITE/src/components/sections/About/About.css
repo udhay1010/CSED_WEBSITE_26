@@ -315,13 +315,17 @@
 #about > div.about-content {
   position: absolute;
   left: 28%;
-  width: 44%;
+  /* Reserve the portrait's rendered width (682:1024 inside its 35vw/70vh box). */
+  right: min(35vw, calc(70vh * 682 / 1024));
+  width: auto;
+  min-width: 0;
 }
 
 #about > .about-content > div {
   justify-content: flex-start;
   padding-top: clamp(168px, 21vh, 228px);
   padding-inline: 32px;
+  padding-right: 0;
 }
 
 #about .about-content > div > div:first-child {
@@ -338,12 +342,12 @@
 }
 
 @media (min-width: 768px) and (max-width: 1199px) {
-  #about > div.about-content { left: 23%; width: 54%; }
+  #about > div.about-content { left: 23%; right: 23%; }
   #about > .about-content > div { padding-inline: 24px; }
 }
 
 @media (max-width: 767px) {
-  #about > div.about-content { left: 0; width: 100%; padding-left: 0; }
+  #about > div.about-content { left: 0; right: 0; width: 100%; padding-left: 0; }
   #about > .about-content > div {
     padding-top: clamp(88px, 14vh, 128px);
     padding-inline: 24px;
