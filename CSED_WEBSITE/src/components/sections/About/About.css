@@ -310,3 +310,43 @@
   margin-right: 0.28em;
   will-change: transform, opacity, filter;
 }
+
+/* Keep both animated states in the same central content area. */
+#about > div.about-content {
+  position: absolute;
+  left: 28%;
+  width: 44%;
+}
+
+#about > .about-content > div {
+  justify-content: flex-start;
+  padding-top: clamp(168px, 21vh, 228px);
+  padding-inline: 32px;
+}
+
+#about .about-content > div > div:first-child {
+  flex-wrap: nowrap;
+  margin-bottom: 24px;
+}
+
+#about .anim-tagline { min-width: 0; }
+
+#about .about-content .gsearch-neon-wrapper,
+#about .about-content .welcome-inline-block {
+  max-width: 100%;
+  margin-top: 0;
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  #about > div.about-content { left: 23%; width: 54%; }
+  #about > .about-content > div { padding-inline: 24px; }
+}
+
+@media (max-width: 767px) {
+  #about > div.about-content { left: 0; width: 100%; padding-left: 0; }
+  #about > .about-content > div {
+    padding-top: clamp(88px, 14vh, 128px);
+    padding-inline: 24px;
+  }
+  #about .about-content > div > div:first-child { margin-bottom: 16px; }
+}

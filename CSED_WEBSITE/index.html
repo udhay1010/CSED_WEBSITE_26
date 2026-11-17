@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      const navigation = performance.getEntriesByType('navigation')[0];
+      if (navigation?.type === 'reload' || (!navigation && performance.navigation?.type === 1)) {
+        document.documentElement.dataset.reloadTop = 'pending';
+        document.documentElement.style.scrollBehavior = 'auto';
+        document.documentElement.style.overflowAnchor = 'none';
+        history.scrollRestoration = 'manual';
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
+    </script>
     <title>csed-website</title>
   </head>
   <body>
