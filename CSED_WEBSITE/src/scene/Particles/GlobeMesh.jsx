@@ -1,32 +1,32 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { BackSide } from 'three';
 import { AXIAL_TILT, GLOBE_ROTATION_SPEED, getGlobePose } from './particleConfig';
 import { useIntroStore } from '../../store/introStore';
 import ParticleSystem from './ParticleSystem';
 import GlobeConnections from './GlobeConnections';
 
 const atmosphereVertex = `
-  varying vec3 vNormal; varying vec3 vView;
+  varying vec3 vViewPosition;
+  varying vec3 vCenter;
+  varying float vRadius;
   void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    vNormal = normalize(normalMatrix * normal); vView = -mv.xyz;
-    gl_Position = projectionMatrix * mv;
+    vec4 view = modelViewMatrix * vec4(position, 1.0);
+    vViewPosition = view.xyz;
+    vCenter = (modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+    vRadius = length(modelViewMatrix[0].xyz);
+    gl_Position = projectionMatrix * view;
   }`;
 const atmosphereFragment = `
-  varying vec3 vNormal; varying vec3 vView;
+  varying vec3 vViewPosition;
+  varying vec3 vCenter;
+  varying float vRadius;
   void main() {
-    float facing = abs(dot(normalize(vNormal), normalize(vView)));
-    float rim = pow(1.0 - facing, 12.0);
-    float edge = pow(1.0 - facing, 70.0);
-    gl_FragColor = vec4(1.0, 0.055, 0.12, rim * 0.35 + edge * 0.65);
-  }`;
-const glowFragment = `
-  varying vec3 vNormal; varying vec3 vView;
-  void main() {
-    float facing = abs(dot(normalize(vNormal), normalize(vView)));
-    float glow = smoothstep(0.0, 0.1, facing) * exp(-facing * 8.0);
-    gl_FragColor = vec4(0.8, 0.015, 0.045, glow * 0.18);
+    float impact = length(cross(normalize(vViewPosition), vCenter));
+    float altitude = max(0.0, impact / vRadius - 1.0);
+    float edge = exp(-pow(altitude / 0.003, 1.4)) * 0.0672;
+    float haze = exp(-pow(altitude / 0.016, 1.2)) * 0.168;
+    gl_FragColor = vec4(1.0, 0.055, 0.1, edge + haze);
   }`;
 
 export default function GlobeMesh({ isLand, compact, reducedMotion }) {
@@ -46,18 +46,15 @@ export default function GlobeMesh({ isLand, compact, reducedMotion }) {
         <meshBasicMaterial colorWrite={false} />
       </mesh>
       <group rotation={[0, 0, -AXIAL_TILT * Math.PI / 180]}>
-        <group ref={spin} rotation={[0.22, -1.15, 0]}>
+        {/* Centre 90°E after accounting for the existing axial tilt and hero camera angle. */}
+        <group ref={spin} rotation={[0.22, -3.34, 0]}>
           <ParticleSystem isLand={isLand} compact={compact} />
-          <GlobeConnections reducedMotion={reducedMotion} />
+          <GlobeConnections isLand={isLand} reducedMotion={reducedMotion} />
         </group>
       </group>
-      <mesh scale={1.009}>
-        <sphereGeometry args={[1, 192, 128]} />
-        <shaderMaterial vertexShader={atmosphereVertex} fragmentShader={atmosphereFragment} transparent depthWrite={false} side={THREE.BackSide} />
-      </mesh>
-      <mesh scale={1.035}>
-        <sphereGeometry args={[1, 128, 96]} />
-        <shaderMaterial vertexShader={atmosphereVertex} fragmentShader={glowFragment} transparent depthWrite={false} side={THREE.BackSide} />
+      <mesh>
+        <sphereGeometry args={[1.025, 192, 128]} />
+        <shaderMaterial vertexShader={atmosphereVertex} fragmentShader={atmosphereFragment} transparent depthWrite={false} side={BackSide} />
       </mesh>
     </group>
   );

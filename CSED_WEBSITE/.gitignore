@@ -7,9 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+node_modules/
+/dist/
+/dist-ssr/
 *.local
 
 # Editor directories and files
@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Vite/lint caches and standard browser-test output directories.
+/.vite/
+/.vite-temp/
+/.eslintcache
+/playwright-report/
+/test-results/
+/blob-report/
+
+# Generated local verification output; keep Markdown reports and other docs visible.
+/docs/verification/**/*.png
+/docs/verification/**/results.json
+/docs/verification/**/lint-results.json
+/docs/verification/**/performance.json
+/docs/verification/**/measurements.json
+/docs/verification/**/before-*.json
+/docs/verification/navbar-direction/before-hook.js

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Navbar   from "./components/layout/Navbar/Navbar";
 import Footer   from "./components/layout/Footer/Footer";
 import Home     from "./components/sections/Home/Home";
@@ -23,16 +22,6 @@ import "./App.css";
  */
 function App() {
   const globeOpacity = useIntroStore((s) => s.globeOpacity);
-
-  useEffect(() => {
-    const previousScrollRestoration = window.history.scrollRestoration;
-    window.history.scrollRestoration = "manual";
-    window.scrollTo(0, 0);
-
-    return () => {
-      window.history.scrollRestoration = previousScrollRestoration;
-    };
-  }, []);
 
   return (
     <>

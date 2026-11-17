@@ -16,6 +16,7 @@ const Home = () => {
   return (
     <section
       id="home"
+      data-nav-theme="dark"
       style={{ background: "transparent", position: "relative", zIndex: 10 }}
     >
       <Hero />

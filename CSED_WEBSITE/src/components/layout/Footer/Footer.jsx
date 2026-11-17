@@ -182,6 +182,11 @@ export function HeroShowcase({
   const handleGlyphEnter = (i) => () => {
     const el = glyphRefs.current[i];
     if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.set(el, { fill: HOVER_COLOR });
+      applyGlyphTransform(el, 1);
+      return;
+    }
     const proxy = { scale: 1 };
     gsap.to(el, { fill: HOVER_COLOR, duration: 0.3, overwrite: "auto" });
     gsap.to(proxy, {
@@ -198,6 +203,12 @@ export function HeroShowcase({
   const handleGlyphLeave = (i) => () => {
     const el = glyphRefs.current[i];
     if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.set(el, { fill: CLOSING_COLOR });
+      applyGlyphTransform(el, 1);
+      el.classList.remove('svg-glyph--hover');
+      return;
+    }
     const proxy = { scale: HOVER_SCALE };
     gsap.to(el, { fill: CLOSING_COLOR, duration: 0.35, overwrite: "auto" });
     gsap.to(proxy, {
@@ -211,7 +222,7 @@ export function HeroShowcase({
   };
 
   return (
-    <section className="hero-root" ref={rootRef} aria-label="CSED showcase">
+    <section data-nav-theme="dark" className="hero-root" ref={rootRef} aria-label="CSED showcase">
       <svg
         ref={svgRef}
         className="hero-svg"
@@ -314,7 +325,7 @@ export function HeroShowcase({
    --------------------------- */
 export function FooterFull() {
   return (
-    <footer className="site-footer" id="site-footer">
+    <footer data-nav-theme="dark" className="site-footer" id="site-footer">
       <div className="footer-inner">
         {/* Top row with brand copy and grouped links. */}
         <div className="footer-top">

@@ -1,0 +1,48 @@
+.intro-nav {
+  isolation: isolate;
+  background: var(--nav-from-bg, var(--bg));
+  border-bottom: 1px solid transparent;
+}
+
+.intro-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--nav-to-bg, var(--bg));
+  clip-path: inset(var(--nav-cut, 80px) 0 0);
+}
+
+.nav-ink {
+  display: inline-block;
+  color: var(--white);
+  background-image: var(--nav-ink, linear-gradient(var(--white), var(--white)));
+  background-size: 100% var(--nav-height, 80px);
+  background-position: 0 calc(0px - var(--nav-text-offset, 0px));
+  background-repeat: no-repeat;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-link[aria-current="location"] .nav-ink,
+.nav-link:hover .nav-ink {
+  background: none;
+  color: var(--red);
+  -webkit-text-fill-color: currentColor;
+}
+
+.nav-join:hover .nav-ink {
+  background: none;
+  color: var(--white);
+  -webkit-text-fill-color: currentColor;
+}
+
+.intro-nav button:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 4px;
+}
+
+@media (forced-colors: active) {
+  .intro-nav .nav-ink { background: none; color: ButtonText; -webkit-text-fill-color: currentColor; }
+}

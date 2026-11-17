@@ -1,0 +1,16 @@
+# Installed dependencies at the workspace root or inside the application.
+node_modules/
+
+# Use this directory for future local screenshots, traces, and debug captures.
+.local-artifacts/
+
+# Local environment values; keep shareable examples visible.
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# npm installation logs and operating-system metadata.
+npm-debug.log*
+.DS_Store
+Thumbs.db

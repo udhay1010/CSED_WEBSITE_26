@@ -292,6 +292,7 @@ export default function About() {
   return (
     <section
       id="about"
+      data-nav-theme="light"
       ref={containerRef}
       className="relative w-full text-black flex overflow-hidden mt-[80px]"
       style={{
